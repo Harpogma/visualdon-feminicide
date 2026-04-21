@@ -1,0 +1,385 @@
+{
+  "jour-j": {
+    "description": "Dates des féminicides recensés en Suisse",
+    "statistique": {
+      "label1": "Le temps passe. Le silence s'installe. Le cycle recommence.",
+      "label2": "1 femme victime de féminicide tous les 17 jours en Suisse",
+      "intervalle_jours": 17,
+      "source": "https://www.stopfemizid.ch/francais"
+    },
+    "j-3-jours": [
+      "2020-01-01",
+      "2020-01-26",
+      "2020-03-03",
+      "2020-03-18",
+      "2020-04-02",
+      "2020-04-15",
+      "2020-05-16",
+      "2020-05-17",
+      "2020-06-14",
+      "2020-06-20",
+      "2020-08-24",
+      "2020-09-02",
+      "2020-09-21",
+      "2020-11-04",
+      "2020-12-25",
+      "2020-12-30",
+      "2021-01-12",
+      "2021-01-17",
+      "2021-02-08",
+      "2021-02-16",
+      "2021-02-23",
+      "2021-02-23",
+      "2021-03-08",
+      "2021-03-12",
+      "2021-03-15",
+      "2021-03-19",
+      "2021-03-28",
+      "2021-04-17",
+      "2021-04-22",
+      "2021-06-01",
+      "2021-06-13",
+      "2021-07-05",
+      "2021-07-08",
+      "2021-07-11",
+      "2021-07-20",
+      "2021-08-05",
+      "2021-08-12",
+      "2021-10-13",
+      "2021-10-16",
+      "2021-10-18",
+      "2021-10-21",
+      "2021-12-16",
+      "2022-02-11",
+      "2022-02-27",
+      "2022-03-12",
+      "2022-04-05",
+      "2022-04-06",
+      "2022-04-11",
+      "2022-04-24",
+      "2022-05-22",
+      "2022-07-09",
+      "2022-07-25",
+      "2022-09-08",
+      "2022-09-14",
+      "2022-09-25",
+      "2022-10-15",
+      "2022-11-23",
+      "2022-12-16",
+      "2023-02-15",
+      "2023-03-09",
+      "2023-03-09",
+      "2023-03-09",
+      "2023-03-09",
+      "2023-03-21",
+      "2023-03-24",
+      "2023-03-26",
+      "2023-04-08",
+      "2023-04-14",
+      "2023-05-26",
+      "2023-05-27",
+      "2023-06-19",
+      "2023-06-25",
+      "2023-07-04",
+      "2023-08-03",
+      "2023-09-24",
+      "2023-10-01",
+      "2023-11-11",
+      "2023-11-28",
+      "2023-12-11",
+      "2024-01-05",
+      "2024-01-15",
+      "2024-01-31",
+      "2024-02-13",
+      "2024-03-16",
+      "2024-03-25",
+      "2024-05-21",
+      "2024-06-04",
+      "2024-07-06",
+      "2024-07-28",
+      "2024-08-08",
+      "2024-08-24",
+      "2024-09-06",
+      "2024-09-11",
+      "2024-10-06",
+      "2024-10-23",
+      "2024-10-25",
+      "2024-10-25",
+      "2024-11-26",
+      "2024-11-27",
+      "2024-12-03",
+      "2025-01-14",
+      "2025-01-16",
+      "2025-01-25",
+      "2025-01-26",
+      "2025-02-07",
+      "2025-02-10",
+      "2025-02-17",
+      "2025-02-17",
+      "2025-03-12",
+      "2025-03-22",
+      "2025-03-22",
+      "2025-03-24",
+      "2025-04-03",
+      "2025-04-10",
+      "2025-04-27",
+      "2025-06-14",
+      "2025-06-17",
+      "2025-07-05",
+      "2025-08-19",
+      "2025-08-19",
+      "2025-08-19",
+      "2025-08-26",
+      "2025-08-27",
+      "2025-09-15",
+      "2025-11-08",
+      "2025-11-09"
+    ]
+  },
+  "j-3-semaines": {
+    "id": "age_moyen_auteur_homicide",
+    "label": "L'âge moyen de l'auteur varie fortement selon le contexte de l'homicide",
+    "comparaison": [
+      { "contexte": "Homicide sur partenaire intime", "age_moyen": 47 },
+      { "contexte": "Autres homicides", "age_moyen": 33 }
+    ],
+    "source": "https://www.24heures.ch/suisse-le-profil-des-auteurs-de-feminicides-190676825350"
+  },
+  "j-2-mois": {
+    "description": "Statistiques générales sur les femmes victimes d'homicide en Suisse",
+    "source": "https://www.edi.admin.ch/fr/violence-domestique-sexuelle-et-de-genre-la-premiere-campagne-nationale-de-prevention-est-lancee",
+    "statistiques": [
+      {
+        "id": "victimes_feminines",
+        "valeur": 70,
+        "complement": 30,
+        "label": "Les femmes représentent près de 70% des victimes d'homicide en Suisse"
+      },
+      {
+        "id": "homicides_domestiques",
+        "valeur": 50,
+        "complement": 50,
+        "label": "Plus de la moitié des homicides en Suisse ont lieu dans le cadre domestique"
+      }
+    ]
+  },
+  "j-1-an": {
+    "description": "Statistiques sur les homicides dans le cadre des relations de couple",
+    "apres_rupture": {
+      "id": "feminicides_apres_rupture",
+      "valeur": 39,
+      "complement": 61,
+      "periode": "1990–2014",
+      "label": "39% des homicides au sein d'un couple en Suisse surviennent après une rupture",
+      "source": "https://www.24heures.ch/feminicide-la-rupture-moment-fatal-pour-les-femmes-247104825849#:~:text=En%20Suisse%2C%2039%25%20des%20f%C3%A9minicides,d'une%20arme%20%C3%A0%20feu"
+    }
+  },
+  "j-2-ans": {
+    "description": "Statistiques sur la violence domestique en Suisse",
+    "plaintes": {
+      "id": "victimes_portent_plainte",
+      "valeur_min": 10,
+      "valeur_max": 22,
+      "complement_min": 78,
+      "complement_max": 90,
+      "label": "Seuls 10 à 22% des victimes de violence domestique portent plainte en Suisse",
+      "contexte": "Les statistiques officielles ne reflètent qu'une fraction de l'exposition effective à la violence",
+      "source": "https://www.ebg.admin.ch/dam/fr/sd-web/YXpdk4fA4TpV/a4_chiffres-de-la-violence-domestique-en-suisse.pdf"
+    }
+  },
+  "j-15-ans": {
+    "id": "infractions_violence_domestique_2023",
+    "annee": 2023,
+    "total": 19918,
+    "label": "19 918 infractions de violence domestique enregistrées en Suisse en 2023",
+    "details": [
+      { "type": "Voies de fait", "valeur": 6378 },
+      { "type": "Menaces", "valeur": 4090 },
+      { "type": "Insultes", "valeur": 3807 },
+      { "type": "Lésions corporelles simples", "valeur": 2045 },
+      { "type": "Infractions d'ordre sexuel avec des enfants", "valeur": 407 },
+      { "type": "Homicides ou tentatives d'homicide", "valeur": 88 }
+    ],
+    "source": "https://www.ebg.admin.ch/dam/fr/sd-web/YXpdk4fA4TpV/a4_chiffres-de-la-violence-domestique-en-suisse.pdf"
+  },
+  "j-30-ans": {
+    "description": "Homicides consommés (art. 111-113/116) ventilés par sexe et type de relation",
+    "periode": "2020 à 2025",
+    "source": "https://www.bfs.admin.ch/bfs/fr/home/actualites/quoi-de-neuf.assetdetail.36456053.html",
+    "donnees": {
+      "hommes": {
+        "total": {
+          "total_periode": 38,
+          "2025": 9,
+          "2024": 7,
+          "2023": 5,
+          "2022": 7,
+          "2021": 3,
+          "2020": 7
+        },
+        "partenaires": {
+          "total_periode": 8,
+          "2025": 2,
+          "2024": 1,
+          "2023": 2,
+          "2022": 1,
+          "2021": 1,
+          "2020": 1
+        },
+        "ex_partenaires": {
+          "total_periode": 1,
+          "2025": 0,
+          "2024": 1,
+          "2023": 0,
+          "2022": 0,
+          "2021": 0,
+          "2020": 0
+        },
+        "relation_parents_enfants": {
+          "total_periode": 18,
+          "2025": 6,
+          "2024": 1,
+          "2023": 1,
+          "2022": 5,
+          "2021": 1,
+          "2020": 4
+        },
+        "autre_lien_de_parente": {
+          "total_periode": 11,
+          "2025": 1,
+          "2024": 4,
+          "2023": 2,
+          "2022": 1,
+          "2021": 1,
+          "2020": 2
+        }
+      },
+      "femmes": {
+        "total": {
+          "total_periode": 125,
+          "2025": 25,
+          "2024": 19,
+          "2023": 20,
+          "2022": 18,
+          "2021": 20,
+          "2020": 23
+        },
+        "partenaires": {
+          "total_periode": 77,
+          "2025": 17,
+          "2024": 14,
+          "2023": 11,
+          "2022": 13,
+          "2021": 12,
+          "2020": 10
+        },
+        "ex_partenaires": {
+          "total_periode": 14,
+          "2025": 2,
+          "2024": 3,
+          "2023": 3,
+          "2022": 2,
+          "2021": 3,
+          "2020": 1
+        },
+        "relation_parents_enfants": {
+          "total_periode": 30,
+          "2025": 5,
+          "2024": 2,
+          "2023": 6,
+          "2022": 3,
+          "2021": 4,
+          "2020": 10
+        },
+        "autre_lien_de_parente": {
+          "total_periode": 4,
+          "2025": 1,
+          "2024": 0,
+          "2023": 0,
+          "2022": 0,
+          "2021": 1,
+          "2020": 2
+        }
+      },
+      "total_general": {
+        "total_periode": 163,
+        "2025": 34,
+        "2024": 26,
+        "2023": 25,
+        "2022": 25,
+        "2021": 23,
+        "2020": 30
+      },
+      "ratio_femmes_hommes": {
+        "description": "Rapport du nombre de victimes femmes sur le nombre de victimes hommes",
+        "total_periode": 3.29,
+        "2025": 2.78,
+        "2024": 2.71,
+        "2023": 4.0,
+        "2022": 2.57,
+        "2021": 6.67,
+        "2020": 3.29
+      }
+    }
+  },
+
+  "j-46-ans": {
+    "description": "Actes d'ordre sexuel avec des enfants (art. 187), ventilés par sexe et type de relation",
+    "source": "https://www.bfs.admin.ch/bfs/fr/home/actualites/quoi-de-neuf.assetdetail.36456053.html",
+    "donnees": {
+      "total": {
+        "total_2022_2025": 1388,
+        "2025": 357,
+        "2024": 325,
+        "2023": 359,
+        "2022": 347
+      },
+      "masculin": {
+        "total_sexe": {
+          "total_2022_2025": 300,
+          "2025": 78,
+          "2024": 66,
+          "2023": 79,
+          "2022": 77
+        },
+        "relation_parents_enfants": {
+          "total_2022_2025": 199,
+          "2025": 54,
+          "2024": 40,
+          "2023": 52,
+          "2022": 53
+        },
+        "autre_lien_de_parente": {
+          "total_2022_2025": 101,
+          "2025": 24,
+          "2024": 26,
+          "2023": 27,
+          "2022": 24
+        }
+      },
+      "feminin": {
+        "total_sexe": {
+          "total_2022_2025": 1088,
+          "2025": 279,
+          "2024": 259,
+          "2023": 280,
+          "2022": 270
+        },
+        "relation_parents_enfants": {
+          "total_2022_2025": 651,
+          "2025": 174,
+          "2024": 150,
+          "2023": 173,
+          "2022": 154
+        },
+        "autre_lien_de_parente": {
+          "total_2022_2025": 437,
+          "2025": 105,
+          "2024": 109,
+          "2023": 107,
+          "2022": 116
+        }
+      }
+    }
+  }
+}

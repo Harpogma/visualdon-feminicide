@@ -6,6 +6,7 @@
 import * as d3 from 'd3'
 import { drawFlower, drawCircle } from './flower.js'
 import { INFRACTION_DATA } from './data.js'
+import flowerUrl from '../assets/svg/flower.svg'
 
 /** Crée un SVG responsive dans un conteneur */
 function makeSVG(el, W, H) {
@@ -17,48 +18,30 @@ function makeSVG(el, W, H) {
 }
 
 /* ══════════════════════════════════════════
-   JJ — La mort: "365" + colonnes de fleurs
+   JJ — La mort: mois animés + colonnes de fleurs
 ══════════════════════════════════════════ */
 export function vizJourJ() {
   const el = document.getElementById('viz-jour-j')
   if (!el) return
   const W = el.clientWidth || 760
   const H = el.clientHeight || 240
-  const svg = makeSVG(el, W, H)
 
-  // Grand "365"
-  svg.append('text')
-    .attr('x', W * 0.24).attr('y', H * 0.78)
-    .attr('text-anchor', 'middle')
-    .attr('font-size', Math.min(H * 0.78, 196))
-    .attr('font-weight', '300')
-    .attr('fill', '#F29CB7')
-    .attr('font-family', 'DM Sans, Georgia, serif')
-    .attr('letter-spacing', '-.04em')
-    .text('365')
+  // Slot-machine month scroller (left side, HTML overlay)
+  const months = ['Janvier','Février','Mars','Avril','Mai','Juin',
+                   'Juillet','Août','Septembre','Octobre','Novembre','Décembre']
 
-  // Colonnes de fleurs (droite)
-  const cols = 6, rows = 6
-  const startX = W * 0.46
-  const spX = Math.min(46, (W * 0.5) / cols)
-  const spY = Math.min(38, (H * 0.88) / rows)
-  const baseR = 13
-
-  for (let c = 0; c < cols; c++) {
-    for (let r = 0; r < rows; r++) {
-      const cx = startX + c * spX + spX / 2
-      const cy = H * 0.06 + r * spY
-      const scale = 0.58 + (r / rows) * 0.56
-      const fr = baseR * scale
-      drawFlower(svg, cx, cy, fr, '#F29CB7', 0.76 + r * 0.024)
-      if (r >= rows - 2) {
-        svg.append('line')
-          .attr('x1', cx).attr('y1', cy + fr + 1)
-          .attr('x2', cx).attr('y2', H - 3)
-          .attr('stroke', '#F29CB7').attr('stroke-width', 1.4).attr('opacity', 0.26)
-      }
-    }
-  }
+  const scroller = document.createElement('div')
+  scroller.className = 'month-scroller'
+  const track = document.createElement('div')
+  track.className = 'month-track'
+  months.forEach(m => {
+    const slide = document.createElement('div')
+    slide.className = 'month-slide'
+    slide.textContent = m
+    track.appendChild(slide)
+  })
+  scroller.appendChild(track)
+  el.appendChild(scroller)
 }
 
 /* ══════════════════════════════════════════
@@ -215,6 +198,56 @@ export function vizJ46Ans() {
 
   // Fleur centrale principale
   drawFlower(svg, cX + 3, cY - 3, 19, '#F29CB7', 1.0)
+}
+
+/** Démarre l'animation des mois (appelé quand l'écran JJ entre en vue) */
+let _jourJStarted = false
+export function startJourJAnim() {
+  if (_jourJStarted) return
+  _jourJStarted = true
+
+  const el = document.getElementById('viz-jour-j')
+  const track = document.querySelector('#viz-jour-j .month-track')
+  const scroller = document.querySelector('#viz-jour-j .month-scroller')
+  if (!el || !track || !scroller) return
+
+  setTimeout(() => {
+    track.classList.add('animate')
+
+    // Spawn 21 flowers randomly over the 5s animation window
+    for (let i = 0; i < 21; i++) {
+      const img = document.createElement('img')
+      img.src = flowerUrl
+      img.style.cssText = `
+        position: absolute;
+        width: 50px;
+        left: ${Math.random() * 88}%;
+        top: ${Math.random() * 78}%;
+        transform: rotate(${Math.random() * 360}deg);
+        opacity: 0;
+        transition: opacity 0.7s ease;
+        pointer-events: none;
+      `
+      el.appendChild(img)
+      setTimeout(() => { img.style.opacity = '1' },
+        Math.random() * 4500)
+    }
+  }, 2000)
+
+  setTimeout(() => {
+    track.style.transition = 'opacity 0.45s ease'
+    track.style.opacity = '0'
+    setTimeout(() => {
+      scroller.innerHTML = ''
+      const num = document.createElement('div')
+      num.className = 'month-slide'
+      num.textContent = '21'
+      num.style.opacity = '0'
+      num.style.transition = 'opacity 0.45s ease'
+      scroller.appendChild(num)
+      setTimeout(() => { num.style.opacity = '1' }, 20)
+    }, 450)
+  }, 7000)
 }
 
 /** Lance toutes les visualisations */

@@ -388,6 +388,67 @@ body {
 }
 
 /* ══════════════════════════════════════════
+   MONTH SCROLLER (viz-jour-j)
+══════════════════════════════════════════ */
+.month-scroller {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font);
+  font-size: clamp(38px, 5.5vw, 82px);
+  font-weight: 300;
+  color: var(--rose);
+  line-height: 1.2em;
+  height: 1.2em;
+  overflow: hidden;
+  letter-spacing: -.02em;
+  pointer-events: none;
+}
+
+.month-track {
+  /* animation starts only when .animate is added via JS */
+}
+
+.month-track.animate {
+  animation: slideMonths 5s 1 forwards;
+}
+
+.month-slide {
+  height: 1.2em;
+  display: flex;
+  align-items: center;
+}
+
+/* Slides through all 12 months, holds at Décembre (position 11 × 1.2em = 13.2em). */
+@keyframes slideMonths {
+  0%      { transform: translateY(0em); }
+  6%      { transform: translateY(0em); }
+  8.33%   { transform: translateY(-1.2em); }
+  14.33%  { transform: translateY(-1.2em); }
+  16.67%  { transform: translateY(-2.4em); }
+  22.67%  { transform: translateY(-2.4em); }
+  25%     { transform: translateY(-3.6em); }
+  31%     { transform: translateY(-3.6em); }
+  33.33%  { transform: translateY(-4.8em); }
+  39.33%  { transform: translateY(-4.8em); }
+  41.67%  { transform: translateY(-6em); }
+  47.67%  { transform: translateY(-6em); }
+  50%     { transform: translateY(-7.2em); }
+  56%     { transform: translateY(-7.2em); }
+  58.33%  { transform: translateY(-8.4em); }
+  64.33%  { transform: translateY(-8.4em); }
+  66.67%  { transform: translateY(-9.6em); }
+  72.67%  { transform: translateY(-9.6em); }
+  75%     { transform: translateY(-10.8em); }
+  81%     { transform: translateY(-10.8em); }
+  83.33%  { transform: translateY(-12em); }
+  89.33%  { transform: translateY(-12em); }
+  91.67%  { transform: translateY(-13.2em); }
+  100%    { transform: translateY(-13.2em); }
+}
+
+/* ══════════════════════════════════════════
    SVG ILLUSTRATIONS
 ══════════════════════════════════════════ */
 .vase-svg        { width: 170px; height: auto; opacity: .9; }
