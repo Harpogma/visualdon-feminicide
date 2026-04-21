@@ -24,16 +24,6 @@ export function initHome() {
     obs.observe(s)
   })
 
-  /* ── CTA → timeline ── */
-  document.getElementById('cta-button')?.addEventListener('click', () => {
-    document.getElementById('page-timeline')?.scrollIntoView({ behavior: 'smooth' })
-  })
-
-  /* ── Retour à l'accueil ── */
-  document.getElementById('back-home')?.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  })
-
   /* ── Fondu du scroll hint ── */
   window.addEventListener('scroll', () => {
     const hint = document.querySelector('.scroll-hint')

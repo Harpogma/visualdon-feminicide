@@ -54,12 +54,13 @@ body {
 .home-hero {
   min-height: 100vh;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  justify-content: center;
   padding: 0 80px 100px;
   position: relative;
 }
 
-.hero-content { max-width: 900px; }
+.hero-content { max-width: 900px; text-align: center; }
 
 .hero-title {
   font-size: clamp(50px, 7vw, 90px);
@@ -94,7 +95,7 @@ body {
   border-top: 1px solid var(--rf);
 }
 
-.section-inner { max-width: 960px; }
+.section-inner { max-width: 960px; margin: 0 auto; text-align: center; }
 
 .section-title {
   font-size: clamp(17px, 2vw, 25px);
@@ -111,6 +112,7 @@ body {
   color: var(--rose);
   opacity: .73;
   max-width: 700px;
+  margin: 0 auto;
 }
 
 /* Stats grid */
@@ -169,11 +171,12 @@ body {
   min-height: 62vh;
   display: flex;
   align-items: center;
+  justify-content: center;
   padding: 80px;
   border-top: 1px solid var(--rf);
 }
 
-.cta-inner { max-width: 800px; }
+.cta-inner { max-width: 800px; text-align: center; }
 
 .cta-label {
   font-size: 14px;
@@ -202,6 +205,7 @@ body {
   font-weight: 400;
   letter-spacing: .1em;
   text-transform: uppercase;
+  text-decoration: none;
   transition: background .3s, color .3s;
   cursor: pointer;
   background: none;
