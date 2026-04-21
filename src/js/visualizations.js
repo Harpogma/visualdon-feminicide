@@ -7,6 +7,23 @@ import * as d3 from 'd3'
 import { drawFlower, drawCircle } from './flower.js'
 import { INFRACTION_DATA } from './data.js'
 import flowerUrl from '../assets/svg/flower.svg'
+import { gsap } from 'gsap'
+import { MorphSVGPlugin } from 'gsap/MorphSVGPlugin'
+
+gsap.registerPlugin(MorphSVGPlugin)
+
+// Path data for each petal of flower.svg (viewBox 263.7 × 266.59, center ≈ 131.85, 133.3)
+const FLOWER_PATHS = [
+  'M155.2,266.59c-31.95-14.59-46.04-52.37-31.46-84.31l8.4-18.39c31.95,14.59,46.04,52.36,31.46,84.31l-8.4,18.39Z',
+  'M63.62,252.8c-15.1-31.71-1.61-69.71,30.1-84.81l18.26-8.69c15.1,31.71,1.61,69.71-30.1,84.81l-18.26,8.69Z',
+  'M2.33,183.37c8.82-34,43.57-54.44,77.57-45.62l19.57,5.08c-8.82,34-43.57,54.44-77.57,45.62l-19.57-5.08Z',
+  'M0,90.78c28.61-20.38,68.37-13.69,88.75,14.91l11.73,16.47c-28.61,20.38-68.37,13.69-88.75-14.91L0,90.78Z',
+  'M57.74,18.37c35.01,2.78,61.18,33.46,58.4,68.47l-1.6,20.16c-35.01-2.78-61.18-33.46-58.4-68.47l1.6-20.16Z',
+  'M148.51,0c25.03,24.63,25.36,64.95.72,89.99l-14.18,14.41c-25.03-24.63-25.36-64.95-.72-89.99l14.18-14.41Z',
+  'M229.85,44.28c3.34,34.96-22.33,66.06-57.29,69.4l-20.13,1.92c-3.34-34.96,22.33-66.06,57.29-69.4l20.13-1.92Z',
+  'M263.7,130.49c-19.91,28.93-59.56,36.25-88.49,16.34l-16.66-11.46c19.91-28.93,59.56-36.25,88.5-16.34l16.65,11.46Z',
+  'M234.22,218.28c-33.85,9.36-68.93-10.52-78.29-44.37l-5.39-19.49c33.85-9.36,68.93,10.52,78.29,44.37l5.39,19.49Z',
+]
 
 /** Crée un SVG responsive dans un conteneur */
 function makeSVG(el, W, H) {
@@ -211,10 +228,11 @@ export function startJourJAnim() {
   const scroller = document.querySelector('#viz-jour-j .month-scroller')
   if (!el || !track || !scroller) return
 
+  const flowerEls = []
+
   setTimeout(() => {
     track.classList.add('animate')
 
-    // Spawn 21 flowers randomly over the 5s animation window
     for (let i = 0; i < 21; i++) {
       const img = document.createElement('img')
       img.src = flowerUrl
@@ -229,8 +247,8 @@ export function startJourJAnim() {
         pointer-events: none;
       `
       el.appendChild(img)
-      setTimeout(() => { img.style.opacity = '1' },
-        Math.random() * 4500)
+      flowerEls.push(img)
+      setTimeout(() => { img.style.opacity = '1' }, Math.random() * 4500)
     }
   }, 2000)
 
@@ -248,6 +266,103 @@ export function startJourJAnim() {
       setTimeout(() => { num.style.opacity = '1' }, 20)
     }, 450)
   }, 7000)
+
+  // 1 s after "21" appears, merge 10 random flowers into one
+  setTimeout(() => mergeFlowersTransition(flowerEls), 8500)
+}
+
+/** Animate 10 random flowers converging into a single flower using MorphSVG */
+function mergeFlowersTransition(flowerEls) {
+  const selected = [...flowerEls].sort(() => Math.random() - 0.5).slice(0, 10)
+
+  // Convergence point (center of screen 1)
+  const cx = window.innerWidth * 0.65
+  const cy = window.innerHeight * 0.5
+
+  const FLOWER_W = 150
+  const FLOWER_H = Math.round(FLOWER_W * 266.59 / 263.7)
+
+  const ns = 'http://www.w3.org/2000/svg'
+
+  // Overlay SVG — only for the 10 converging image clones
+  const overlay = document.createElementNS(ns, 'svg')
+  overlay.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:999;overflow:visible'
+  document.body.appendChild(overlay)
+
+  const svgImgs = selected.map(img => {
+    const r = img.getBoundingClientRect()
+    const si = document.createElementNS(ns, 'image')
+    si.setAttribute('href', flowerUrl)
+    si.setAttribute('x', String(r.left))
+    si.setAttribute('y', String(r.top))
+    si.setAttribute('width', String(r.width))
+    si.setAttribute('height', String(r.height))
+    overlay.appendChild(si)
+    img.style.visibility = 'hidden'
+    return si
+  })
+
+  // Separate fixed SVG for the merged flower — this one stays visible
+  const flowerSvg = document.createElementNS(ns, 'svg')
+  flowerSvg.setAttribute('viewBox', '0 0 263.7 266.59')
+  flowerSvg.style.cssText = `
+    position: fixed;
+    width: ${FLOWER_W}px;
+    height: ${FLOWER_H}px;
+    left: ${cx - FLOWER_W / 2}px;
+    top: ${cy - FLOWER_H / 2}px;
+    pointer-events: none;
+    z-index: 999;
+    overflow: visible;
+  `
+  document.body.appendChild(flowerSvg)
+
+  // MorphSVG source: tiny circle at flower centre (131.85, 133.3)
+  const FCX = 131.85, FCY = 133.3, R = 14
+  const morphPath = document.createElementNS(ns, 'path')
+  morphPath.setAttribute('d', `M${FCX - R},${FCY} a${R},${R} 0 1,0 ${R * 2},0 a${R},${R} 0 1,0 -${R * 2},0`)
+  morphPath.setAttribute('fill', '#f29cb7')
+  morphPath.setAttribute('opacity', '0')
+  flowerSvg.appendChild(morphPath)
+
+  const restPetals = FLOWER_PATHS.slice(1).map(d => {
+    const p = document.createElementNS(ns, 'path')
+    p.setAttribute('d', d)
+    p.setAttribute('fill', '#f29cb7')
+    p.setAttribute('opacity', '0')
+    flowerSvg.appendChild(p)
+    return p
+  })
+
+  gsap.timeline()
+    // Phase 1 — converge images toward merge point
+    .to(svgImgs, {
+      attr: { x: cx - 25, y: cy - 25, width: 50, height: 50 },
+      duration: 1.4,
+      ease: 'power2.in',
+      stagger: { amount: 0.4, from: 'random' },
+    })
+    // Phase 2 — fade images out
+    .to(svgImgs, {
+      opacity: 0,
+      duration: 0.5,
+      stagger: 0.04,
+      ease: 'power1.in',
+    }, '-=0.5')
+    // Phase 3 — MorphSVG: circle → first petal
+    .to(morphPath, { opacity: 1, duration: 0.15 })
+    .to(morphPath, { morphSVG: FLOWER_PATHS[0], duration: 0.9, ease: 'power2.out' }, '-=0.05')
+    // Phase 4 — remaining petals bloom in
+    .to(restPetals, { opacity: 1, duration: 0.4, stagger: 0.06, ease: 'power1.out' }, '-=0.4')
+    // Phase 5 — flower travels to the right boundary of screen 1 and vanishes there
+    .to(flowerSvg, {
+      left: window.innerWidth,
+      opacity: 0,
+      duration: 1.4,
+      ease: 'power2.in',
+    })
+    // Cleanup both elements
+    .call(() => { overlay.remove(); flowerSvg.remove() })
 }
 
 /** Lance toutes les visualisations */
