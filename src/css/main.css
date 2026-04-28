@@ -452,6 +452,18 @@ body {
    SVG ILLUSTRATIONS
 ══════════════════════════════════════════ */
 .vase-svg        { width: 170px; height: auto; opacity: .9; }
+
+/* Flower — left side of screen J-quelques jours (position + animation via GSAP) */
+.flower-left {
+  position: absolute;
+  left: 60px;
+  top: 40%;
+  width: 90px;
+  height: auto;
+  transform: translateY(-50%);
+  opacity: 0;
+  pointer-events: none;
+}
 .flower-poem-svg { width: 100%; max-width: 700px; height: auto; }
 .big-flower-svg  { width: 260px; height: auto; opacity: .9; }
 .man-svg         { width: 380px; height: auto; }

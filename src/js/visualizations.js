@@ -365,6 +365,51 @@ function mergeFlowersTransition(flowerEls) {
     .call(() => { overlay.remove(); flowerSvg.remove() })
 }
 
+/* ══════════════════════════════════════════
+   J — Quelques jours: fleur apparaît à gauche puis rejoint le bout de la anse
+══════════════════════════════════════════ */
+export function initFlowerToStem() {
+  const screen3  = document.getElementById('screen-j3j')
+  const flowerEl = screen3?.querySelector('.flower-left')
+  if (!screen3 || !flowerEl) return
+
+  requestAnimationFrame(() => {
+    const vaseEl = screen3.querySelector('.vase-svg')
+    if (!vaseEl) return
+
+    const s3r   = screen3.getBoundingClientRect()
+    const vaseR = vaseEl.getBoundingClientRect()
+
+    // Vase position relative to screen 3
+    const vaseRelLeft = vaseR.left - s3r.left
+    const vaseRelTop  = vaseR.top  - s3r.top
+
+    const FLOWER_W = 90
+    const FLOWER_H = Math.round(FLOWER_W * 266.59 / 263.7)
+    const FLOWER_CX = Math.round(131.85 / 263.7 * FLOWER_W)
+    const FLOWER_CY = Math.round(133.3  / 266.59 * FLOWER_H)
+
+    // Convert CSS top:50% + translateY(-50%) to an explicit pixel value so GSAP can tween from it
+    gsap.set(flowerEl, { top: window.innerHeight / 2 - FLOWER_H / 2, y: 0 })
+
+    // Stem tip: handle top at (17.77, 4.15) in SVG viewBox 113.5 × 255.5
+    const stemX = vaseRelLeft + (17.77 / 113.5) * vaseR.width
+    const stemY = vaseRelTop  + (4.15  / 255.5) * vaseR.height
+    const finalLeft = stemX - FLOWER_CX
+    const finalTop  = stemY - FLOWER_CY + 100
+
+    // One-shot: fade in, then fly to stem tip when the screen becomes active
+    const observer = new MutationObserver(() => {
+      if (!screen3.classList.contains('in-view')) return
+      observer.disconnect()
+      gsap.timeline()
+        .to(flowerEl, { opacity: 1, duration: 0.5, ease: 'power1.out' })
+        .to(flowerEl, { left: finalLeft, top: finalTop, duration: 1.2, ease: 'power2.out' }, '+=0.1')
+    })
+    observer.observe(screen3, { attributes: true, attributeFilter: ['class'] })
+  })
+}
+
 /** Lance toutes les visualisations */
 export function initAllViz() {
   vizJourJ()
@@ -372,4 +417,5 @@ export function initAllViz() {
   vizJ15Ans()
   vizJ30Ans()
   vizJ46Ans()
+  initFlowerToStem()
 }
