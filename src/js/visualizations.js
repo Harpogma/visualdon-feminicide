@@ -4,6 +4,7 @@
  */
 
 import * as d3 from 'd3'
+import { feature } from 'topojson-client'
 import { drawFlower, drawCircle } from './flower.js'
 import { INFRACTION_DATA } from './data.js'
 import flowerUrl from '../assets/svg/flower.svg'
@@ -365,6 +366,220 @@ function mergeFlowersTransition(flowerEls) {
     .call(() => { overlay.remove(); flowerSvg.remove() })
 }
 
+/* ══════════════════════════════════════════
+   J — Naissance : globe terrestre 3D interactif
+══════════════════════════════════════════ */
+export async function initGlobe() {
+  const el = document.getElementById('viz-naissance')
+  if (!el) return
+
+  el.innerHTML = ''
+  el.style.position = 'relative'
+
+  // ── Calcul dynamique des dimensions ──────────────────────────────────────
+  function measure() {
+    const cW = el.clientWidth  || 560
+    const cH = el.clientHeight || 320
+    // Globe diameter = 80% du plus petit côté du conteneur
+    const diam = Math.min(cW, cH) * 0.80
+    return { W: cW, H: cH, radius: diam / 2 }
+  }
+
+  let { W, H, radius } = measure()
+
+  // ISO 3166-1 numeric code → legislation data
+  const codeMap = {
+    '188': { pays: 'Costa Rica',     cat: 'A', year: 2007, statut: 'Pionnier mondial – Loi 8589' },
+    '320': { pays: 'Guatemala',      cat: 'A', year: 2008, statut: 'Décret 22-2008' },
+    '152': { pays: 'Chili',          cat: 'A', year: 2010, statut: 'Loi 20.480 (étendu en 2020 via Loi Gabriela)' },
+    '222': { pays: 'Salvador',       cat: 'A', year: 2011, statut: 'Loi spéciale intégrale' },
+    '484': { pays: 'Mexique',        cat: 'A', year: 2012, statut: 'Inscrit au Code Pénal Fédéral' },
+    '032':  { pays: 'Argentine',      cat: 'A', year: 2012, statut: 'Article 80 inc. 11 du Code pénal' },
+    '076':  { pays: 'Brésil',         cat: 'A', year: 2015, statut: 'Loi 13.104' },
+    '170': { pays: 'Colombie',       cat: 'A', year: 2015, statut: 'Loi Rosa Elvira Cely' },
+    '470': { pays: 'Malte',          cat: 'A', year: 2022, statut: "Premier pays de l'UE à nommer le crime" },
+    '196': { pays: 'Chypre',         cat: 'A', year: 2022, statut: 'Loi 123(I)/2022' },
+    '191': { pays: 'Croatie',        cat: 'A', year: 2024, statut: 'Réforme du Code Pénal (Mars 2024)' },
+    '380': { pays: 'Italie',         cat: 'A', year: 2025, statut: 'Loi suite au mouvement Giulia Cecchettin' },
+    '724': { pays: 'Espagne',        cat: 'B', year: 2004, statut: "Cadre légal intégral – pas de crime nommé 'féminicide' mais protection stricte" },
+    '250': { pays: 'France',         cat: 'B', year: 2017, statut: "Circonstance aggravante 'en raison du sexe' (Art. 132-77)" },
+    '056':  { pays: 'Belgique',       cat: 'B', year: 2023, statut: 'Loi Stop Féminicide (définition légale sans crime autonome)' },
+    '788': { pays: 'Tunisie',        cat: 'B', year: 2017, statut: 'Loi 58-2017 contre les violences faites aux femmes' },
+    '710': { pays: 'Afrique du Sud', cat: 'B', year: 2024, statut: 'GBVF Act (National Strategic Plan)' },
+  }
+  const SWISS_CODE = '756'
+  const SWISS_GEO  = [8.23, 46.82]
+
+  // Tooltip
+  const tooltip = d3.select(el)
+    .append('div')
+    .attr('class', 'globe-tooltip')
+    .style('opacity', '0')
+
+  // SVG
+  const svg = d3.select(el)
+    .append('svg')
+    .attr('viewBox', `0 0 ${W} ${H}`)
+    .attr('width', '100%')
+    .attr('height', '100%')
+    .style('cursor', 'grab')
+    .style('display', 'block')
+
+  const projection = d3.geoOrthographic()
+    .scale(radius)
+    .translate([W / 2, H / 2])
+    .clipAngle(90)
+    .rotate([-10, -25])
+
+  const pathGen = d3.geoPath().projection(projection)
+
+  // Ocean sphere (référence conservée pour les mises à jour resize)
+  const ocean = svg.append('circle')
+    .attr('cx', W / 2).attr('cy', H / 2).attr('r', radius)
+    .attr('fill', '#3a1e52')
+    .attr('stroke', '#F29CB7').attr('stroke-opacity', 0.10).attr('stroke-width', 1)
+
+  // Graticule grid
+  const graticulePath = svg.append('path')
+    .datum(d3.geoGraticule()())
+    .attr('fill', 'none')
+    .attr('stroke', '#F29CB7')
+    .attr('stroke-opacity', 0.07)
+    .attr('stroke-width', 0.4)
+    .attr('d', pathGen)
+
+  // Load world TopoJSON
+  let world
+  try {
+    world = await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+  } catch (e) {
+    console.error('Globe: échec du chargement world-atlas', e)
+    return
+  }
+
+  const countries = feature(world, world.objects.countries)
+
+  // Country paths
+  const countryPaths = svg.append('g')
+    .selectAll('path')
+    .data(countries.features)
+    .join('path')
+    .attr('fill', d => codeMap[String(d.id)] ? '#F29CB7' : 'none')
+    .attr('fill-opacity', d => {
+      const law = codeMap[String(d.id)]
+      if (!law) return 0
+      return law.cat === 'A' ? 0.78 : 0.36
+    })
+    .attr('stroke', '#F29CB7')
+    .attr('stroke-opacity', d => String(d.id) === SWISS_CODE ? 0.90 : 0.18)
+    .attr('stroke-width', d => String(d.id) === SWISS_CODE ? 1.6 : 0.4)
+    .attr('d', pathGen)
+    .on('mouseover', function (event, d) {
+      const law = codeMap[String(d.id)]
+      if (!law) return
+      isHovering = true
+      d3.select(this).attr('fill-opacity', law.cat === 'A' ? 0.96 : 0.62)
+      const elRect = el.getBoundingClientRect()
+      tooltip
+        .html(
+          `<span class="glob-t-pays">${law.pays}</span>` +
+          `<span class="glob-t-year">${law.year}</span>` +
+          `<span class="glob-t-cat">${law.cat === 'A' ? '● Crime autonome' : '● Circonstance aggravante'}</span>` +
+          `<span class="glob-t-statut">${law.statut}</span>`
+        )
+        .style('opacity', '1')
+        .style('left', (event.clientX - elRect.left + 14) + 'px')
+        .style('top',  (event.clientY - elRect.top  - 10) + 'px')
+    })
+    .on('mousemove', function (event) {
+      const elRect = el.getBoundingClientRect()
+      tooltip
+        .style('left', (event.clientX - elRect.left + 14) + 'px')
+        .style('top',  (event.clientY - elRect.top  - 10) + 'px')
+    })
+    .on('mouseout', function (event, d) {
+      const law = codeMap[String(d.id)]
+      if (law) d3.select(this).attr('fill-opacity', law.cat === 'A' ? 0.78 : 0.36)
+      tooltip.style('opacity', '0')
+      isHovering = false
+    })
+
+  // Switzerland marker — pulsing ring + cross (absent de la loi)
+  const swissG = svg.append('g').attr('class', 'swiss-marker')
+  swissG.append('circle').attr('r', 7)
+    .attr('fill', 'none').attr('stroke', '#F29CB7')
+    .attr('stroke-width', 1.2).attr('class', 'swiss-pulse-ring')
+  swissG.append('circle').attr('r', 2.5)
+    .attr('fill', '#F29CB7').attr('fill-opacity', 0.90)
+  // Cross (Swiss flag)
+  const cs = 3.2
+  swissG.append('rect').attr('x', -0.9).attr('y', -cs).attr('width', 1.8).attr('height', cs * 2)
+    .attr('fill', '#3a1e52').attr('fill-opacity', 0.85)
+  swissG.append('rect').attr('x', -cs).attr('y', -0.9).attr('width', cs * 2).attr('height', 1.8)
+    .attr('fill', '#3a1e52').attr('fill-opacity', 0.85)
+
+  // Rotation state
+  let isHovering = false
+  let isDragging = false
+  let resumeTimer = null
+
+  function redraw() {
+    countryPaths.attr('d', pathGen)
+    graticulePath.attr('d', pathGen)
+    const proj = projection(SWISS_GEO)
+    if (proj) {
+      swissG.attr('transform', `translate(${proj[0]},${proj[1]})`).style('display', null)
+    } else {
+      swissG.style('display', 'none')
+    }
+  }
+
+  // ── ResizeObserver : recalcule viewBox + projection au resize ────────────
+  const ro = new ResizeObserver(() => {
+    const next = measure()
+    if (Math.abs(next.W - W) < 4 && Math.abs(next.H - H) < 4) return
+    W = next.W; H = next.H; radius = next.radius
+    svg.attr('viewBox', `0 0 ${W} ${H}`)
+    projection.scale(radius).translate([W / 2, H / 2])
+    ocean.attr('cx', W / 2).attr('cy', H / 2).attr('r', radius)
+    redraw()
+  })
+  ro.observe(el)
+
+  // Auto-rotation (stops while user interacts or hovers)
+  d3.timer(() => {
+    if (isHovering || isDragging) return
+    const [λ, φ] = projection.rotate()
+    projection.rotate([λ + 0.12, φ])
+    redraw()
+  })
+
+  // Drag to rotate manually
+  svg.call(
+    d3.drag()
+      .on('start', () => {
+        isDragging = true
+        if (resumeTimer) { clearTimeout(resumeTimer); resumeTimer = null }
+        svg.style('cursor', 'grabbing')
+        tooltip.style('opacity', '0')
+      })
+      .on('drag', (event) => {
+        const [λ, φ] = projection.rotate()
+        projection.rotate([
+          λ + event.dx * 0.4,
+          Math.max(-80, Math.min(80, φ - event.dy * 0.3)),
+        ])
+        redraw()
+      })
+      .on('end', () => {
+        svg.style('cursor', 'grab')
+        resumeTimer = setTimeout(() => { isDragging = false }, 2500)
+      })
+  )
+
+  redraw()
+}
+
 /** Lance toutes les visualisations */
 export function initAllViz() {
   vizJourJ()
@@ -372,4 +587,5 @@ export function initAllViz() {
   vizJ15Ans()
   vizJ30Ans()
   vizJ46Ans()
+  initGlobe()
 }

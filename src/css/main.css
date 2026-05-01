@@ -279,11 +279,11 @@ body {
 
 .viz-container {
   flex: 1;
+  min-height: 0;           /* laisse le flex réduire librement */
   display: flex;
   align-items: center;
   justify-content: flex-start;
   position: relative;
-  min-height: 140px;
 }
 
 .viz-center { justify-content: center; }
@@ -605,6 +605,79 @@ body {
 .timeline-screen.in-view .morte-center > *:nth-child(1) { transition-delay: .15s; }
 .timeline-screen.in-view .morte-center > *:nth-child(2) { transition-delay: .4s; }
 .timeline-screen.in-view .morte-center > *:nth-child(3) { transition-delay: .65s; }
+
+/* ══════════════════════════════════════════
+   SCREEN NAISSANCE — overrides spécifiques
+══════════════════════════════════════════ */
+#screen-naissance .screen-headline {
+  font-size: clamp(14px, 1.6vw, 24px);
+  margin-bottom: 6px;
+}
+
+#screen-naissance .screen-stat {
+  font-size: clamp(11px, 1.2vw, 16px);
+  margin-bottom: 6px;
+}
+
+/* ══════════════════════════════════════════
+   GLOBE TERRESTRE — tooltip & marqueur CH
+══════════════════════════════════════════ */
+.globe-tooltip {
+  position: absolute;
+  background: rgba(42, 16, 60, 0.94);
+  border: 1px solid rgba(242, 156, 183, 0.30);
+  border-radius: 7px;
+  padding: 10px 14px;
+  pointer-events: none;
+  z-index: 20;
+  max-width: 230px;
+  backdrop-filter: blur(6px);
+  transition: opacity 0.12s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.glob-t-pays {
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  color: #F29CB7;
+  letter-spacing: .03em;
+}
+
+.glob-t-year {
+  font-family: var(--font);
+  font-size: 11px;
+  color: rgba(242, 156, 183, 0.55);
+}
+
+.glob-t-cat {
+  font-family: var(--font);
+  font-size: 10px;
+  color: rgba(242, 156, 183, 0.72);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.glob-t-statut {
+  font-family: var(--font);
+  font-size: 10px;
+  color: rgba(242, 156, 183, 0.48);
+  line-height: 1.45;
+}
+
+/* Pulse ring on the Swiss marker */
+.swiss-pulse-ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: swiss-pulse 2.8s ease-out infinite;
+}
+
+@keyframes swiss-pulse {
+  0%   { transform: scale(1);   stroke-opacity: 0.55; }
+  100% { transform: scale(2.6); stroke-opacity: 0; }
+}
 
 /* ══════════════════════════════════════════
    RESPONSIVE
