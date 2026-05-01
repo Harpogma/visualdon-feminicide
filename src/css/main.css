@@ -619,6 +619,16 @@ body {
 .timeline-screen.in-view .morte-center > *:nth-child(3) { transition-delay: .65s; }
 
 /* ══════════════════════════════════════════
+   SCREEN J-15 ANS — grille animée
+══════════════════════════════════════════ */
+#viz-j15a {
+  overflow: hidden;   /* les groupes qui arrivent hors-champ restent invisibles */
+}
+
+/* Les <g> GSAP vivent dans un SVG — pas de CSS spécifique aux éléments SVG enfants
+   car leur style est géré directement via les attributs D3 (fill, opacity, r…)    */
+
+/* ══════════════════════════════════════════
    SCREEN J-1 AN — champ de floraison Canvas
 ══════════════════════════════════════════ */
 #viz-j1a {

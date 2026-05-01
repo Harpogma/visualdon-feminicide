@@ -217,47 +217,139 @@ export function playFlowerAnim() {
 }
 
 /* ══════════════════════════════════════════
-   J-15 ans — matrice de 163 icônes
-   125 fleurs (femmes) + 38 cercles (hommes)
+   J-15 ans — 163 points → grille → floraison
+   Phase 1 : vol depuis l'extérieur (expo.out)
+   Phase 2 : 2 s de calme
+   Phase 3 : 125 cercles → fleurs (par fondu)
+   Technique : <image> cachée derrière chaque cercle-femme
+               → révélée quand le cercle s'efface
 ══════════════════════════════════════════ */
-export function vizJ15Ans() {
+let _homicideTl     = null
+let _homicidePlayed = false
+
+export function initHomicideGrid() {
   const el = document.getElementById('viz-j15a')
   if (!el) return
-  const W = el.clientWidth || 760
-  const H = el.clientHeight || 230
+  el.innerHTML = ''
+
+  const W     = el.clientWidth  || 900
+  const H     = el.clientHeight || 300
+  const TOTAL = 163
+  const WOMEN = 125
+  const COLS  = 16
+  const ROWS  = Math.ceil(TOTAL / COLS)   // 11 rangées
+
+  // Espacement : s'adapte au conteneur (max 44 px)
+  const sp   = Math.min(W / (COLS + 2), (H * 0.82) / (ROWS + 1), 44)
+  const r    = sp * 0.30           // rayon des points
+  const imgS = sp * 0.86           // taille des images-fleurs
+
+  // Coin supérieur-gauche de la grille (centrée)
+  const ox = (W - (COLS - 1) * sp) / 2
+  const oy = (H - (ROWS - 1) * sp) / 2
+
+  // Positions finales — dernière ligne centrée
+  const finalPos = Array.from({ length: TOTAL }, (_, i) => {
+    const col      = i % COLS
+    const row      = Math.floor(i / COLS)
+    const rowCount = row === ROWS - 1 ? TOTAL - (ROWS - 1) * COLS : COLS
+    const rowShift = ((COLS - rowCount) * sp) / 2
+    return { x: ox + col * sp + rowShift, y: oy + row * sp }
+  })
+
   const svg = makeSVG(el, W, H)
 
-  const total = 163, females = 125
-  const cols = 20
-  const sp = Math.min(W / (cols + 1.5), 34)
-  const r = sp * 0.28
-  const gridW = cols * sp
-  const startX = (W - gridW) / 2 + sp / 2
-  const startY = H * 0.04
+  const groupEls       = []   // tous les <g> (163)
+  const womanCircleEls = []   // les 125 cercles-femmes (disparaissent)
+  const womanImageEls  = []   // les 125 images-fleurs (apparaissent)
 
-  for (let i = 0; i < total; i++) {
-    const col = i % cols
-    const row = Math.floor(i / cols)
-    const cx = startX + col * sp
-    const cy = startY + row * sp
-    if (i < females) {
-      drawFlower(svg, cx, cy, r, '#F29CB7', 0.82)
+  for (let i = 0; i < TOTAL; i++) {
+    const isWoman = i < WOMEN
+    const g = svg.append('g')
+    groupEls.push(g.node())
+
+    if (isWoman) {
+      // L'image est ajoutée EN PREMIER → derrière le cercle en SVG
+      womanImageEls.push(
+        g.append('image')
+          .attr('href', flowerUrl)
+          .attr('x', -imgS / 2).attr('y', -imgS / 2)
+          .attr('width', imgS).attr('height', imgS)
+          .node()
+      )
+      womanCircleEls.push(
+        g.append('circle')
+          .attr('r', r)
+          .attr('fill', '#F29CB7')
+          .node()
+      )
     } else {
-      drawCircle(svg, cx, cy, r * 0.62)
+      // Homme : cercle plus petit, opacité réduite
+      g.append('circle')
+        .attr('r', r * 0.68)
+        .attr('fill', '#F29CB7')
+        .attr('opacity', 0.36)
     }
   }
 
-  // Légende
-  const lY = H * 0.91
-  const lX = startX + 4
-  drawFlower(svg, lX, lY, 7, '#F29CB7', 0.82)
-  svg.append('text').attr('x', lX + 14).attr('y', lY + 4)
-    .attr('font-size', 10).attr('fill', '#F29CB7').attr('opacity', 0.45)
-    .attr('font-family', 'DM Sans, serif').text('= 1 femme')
-  drawCircle(svg, lX + 100, lY, 4.5)
-  svg.append('text').attr('x', lX + 112).attr('y', lY + 4)
-    .attr('font-size', 10).attr('fill', '#F29CB7').attr('opacity', 0.45)
-    .attr('font-family', 'DM Sans, serif').text('= 1 homme')
+  // État initial des images : invisibles et écrasées à 0
+  gsap.set(womanImageEls, {
+    opacity: 0,
+    scale: 0,
+    transformOrigin: '50% 50%',
+  })
+
+  // Position de départ : chaque groupe part d'un bord aléatoire
+  const diagonal = Math.hypot(W, H)
+  groupEls.forEach((gEl, i) => {
+    const { x, y } = finalPos[i]
+    const angle    = Math.random() * Math.PI * 2
+    const dist     = diagonal * 0.65 + 60
+    gsap.set(gEl, {
+      x: x + Math.cos(angle) * dist,
+      y: y + Math.sin(angle) * dist,
+    })
+  })
+
+  // ── GSAP Timeline ─────────────────────────────────────────────────────────
+  _homicideTl = gsap.timeline({ paused: true })
+
+    // Phase 1 — 163 points volent vers leur case dans la grille
+    .to(groupEls, {
+      x: (i) => finalPos[i].x,
+      y: (i) => finalPos[i].y,
+      duration: 0.85,
+      stagger: { amount: 1.4, from: 'random' },
+      ease: 'expo.out',
+    })
+
+    // Phase 2 — silence de 2 s (délai positionnel dans la timeline)
+
+    // Phase 3a — les cercles-femmes s'effacent (révèle les images)
+    .to(womanCircleEls, {
+      opacity: 0,
+      scale: 0.25,
+      transformOrigin: '50% 50%',
+      duration: 0.35,
+      stagger: { amount: 2.2, from: 'random' },
+      ease: 'power2.in',
+    }, '+=0')
+
+    // Phase 3b — les fleurs fleurissent à leur place exacte
+    .to(womanImageEls, {
+      opacity: 1,
+      scale: 1,
+      transformOrigin: '50% 50%',
+      duration: 0.55,
+      stagger: { amount: 2.2, from: 'random' },
+      ease: 'back.out(1.5)',
+    }, '<0.2')         // commence 0.2 s après le début du fondu-sortie
+}
+
+export function playHomicideGrid() {
+  if (_homicidePlayed || !_homicideTl) return
+  _homicidePlayed = true
+  _homicideTl.play()
 }
 
 /* ══════════════════════════════════════════
@@ -756,7 +848,7 @@ export function initFlowerToStem() {
 export function initAllViz() {
   vizJourJ()
   initFlowerField()   // remplace vizJ1An()
-  vizJ15Ans()
+  initHomicideGrid()   // remplace vizJ15Ans()
   vizJ30Ans()
   vizJ46Ans()
   initGlobe()

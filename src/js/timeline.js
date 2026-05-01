@@ -5,7 +5,7 @@
 
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { startJourJAnim, playFlowerAnim } from './visualizations.js'
+import { startJourJAnim, playFlowerAnim, playHomicideGrid } from './visualizations.js'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -46,6 +46,8 @@ export function initTimeline() {
   const jourJIdx = Array.from(screens).findIndex(s => s.querySelector('#viz-jour-j'))
   /* Index de l'écran J-1 an - Floraison */
   const j1aIdx   = Array.from(screens).findIndex(s => s.id === 'screen-j1a')
+  /* Index de l'écran J-15 ans - Grille → Fleurs */
+  const j15aIdx  = Array.from(screens).findIndex(s => s.id === 'screen-j15a')
 
   /* ── Scroll horizontal pinné ── */
   gsap.to(track, {
@@ -80,6 +82,8 @@ export function initTimeline() {
         if (idx === jourJIdx) startJourJAnim()
         /* Lance la floraison quand l'écran J-1 an entre en vue */
         if (idx === j1aIdx)   playFlowerAnim()
+        /* Lance la grille animée quand l'écran J-15 ans entre en vue */
+        if (idx === j15aIdx)  playHomicideGrid()
       },
     },
   })
