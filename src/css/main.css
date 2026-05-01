@@ -607,6 +607,21 @@ body {
 .timeline-screen.in-view .morte-center > *:nth-child(3) { transition-delay: .65s; }
 
 /* ══════════════════════════════════════════
+   SCREEN J-1 AN — champ de floraison Canvas
+══════════════════════════════════════════ */
+#viz-j1a {
+  overflow: hidden;   /* clip du canvas aux limites du conteneur */
+}
+
+.flower-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;     /* supprime le gap inline baseline */
+  pointer-events: none;
+}
+
+/* ══════════════════════════════════════════
    SCREEN NAISSANCE — overrides spécifiques
 ══════════════════════════════════════════ */
 #screen-naissance .screen-headline {

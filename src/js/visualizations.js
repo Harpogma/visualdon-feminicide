@@ -63,30 +63,157 @@ export function vizJourJ() {
 }
 
 /* ══════════════════════════════════════════
-   J-1 an — fleurs éparpillées (4/9 lumineuses)
+   J-1 an — champ de 19 981 fleurs (Canvas)
+   Phase 1 : 20 fleurs au centre, lentement
+   Phase 2 : +19 961 envahissent tout l'espace
+   Perf : bitmap 64px × setTransform × Float32Array
 ══════════════════════════════════════════ */
-export function vizJ1An() {
+class FlowerField {
+  constructor(el) {
+    this.el       = el
+    this.canvas   = null
+    this.ctx      = null
+    this.img      = null        // SVG pré-rastérisé en bitmap 64×64
+    this.positions = null       // Float32Array [x,y,cos,sin] × 19 981
+    this._fs      = 12          // taille courante (px)
+    this.drawn    = 0           // watermark : fleurs déjà tracées
+    this.tl       = null
+    this._played  = false
+    this._ro      = null
+  }
+
+  async init() {
+    this._buildCanvas()
+    await this._bakeImage()
+    this._recompute()
+    this._buildTimeline()
+
+    // Responsive avant démarrage uniquement
+    this._ro = new ResizeObserver(() => {
+      if (this._played) return
+      this.canvas.width  = this.el.clientWidth  || 800
+      this.canvas.height = this.el.clientHeight || 300
+      this._recompute()
+      if (this.tl) this.tl.kill()
+      this.drawn = 0
+      this._buildTimeline()
+    })
+    this._ro.observe(this.el)
+  }
+
+  _buildCanvas() {
+    this.canvas           = document.createElement('canvas')
+    this.canvas.className = 'flower-canvas'
+    this.canvas.width     = this.el.clientWidth  || 800
+    this.canvas.height    = this.el.clientHeight || 300
+    this.el.appendChild(this.canvas)
+    this.ctx = this.canvas.getContext('2d')
+  }
+
+  _bakeImage() {
+    // Charge le SVG une seule fois, rastérisé en canvas 64×64
+    // → drawImage sur bitmap = blit pixel, pas de re-parse SVG
+    return new Promise((resolve, reject) => {
+      const raw = new Image()
+      raw.onload = () => {
+        const bmp = document.createElement('canvas')
+        bmp.width = bmp.height = 64
+        bmp.getContext('2d').drawImage(raw, 0, 0, 64, 64)
+        this.img = bmp
+        resolve()
+      }
+      raw.onerror = reject
+      raw.src = flowerUrl
+    })
+  }
+
+  _recompute() {
+    const W   = this.canvas.width
+    const H   = this.canvas.height
+    // Taille : ≈2× couverture → tapis dense mais formes encore lisibles
+    this._fs  = Math.max(8, Math.min(28,
+      Math.sqrt(W * H * 8 / (Math.PI * 19981))
+    ))
+    const TAU = Math.PI * 2
+    const buf = new Float32Array(19981 * 4)
+
+    // Phase 1 – 20 fleurs groupées au centre
+    for (let i = 0; i < 20; i++) {
+      const a = Math.random() * TAU
+      const d = Math.random() * Math.min(W, H) * 0.18
+      const r = Math.random() * TAU
+      const j = i * 4
+      buf[j]     = W / 2 + Math.cos(a) * d
+      buf[j + 1] = H / 2 + Math.sin(a) * d
+      buf[j + 2] = Math.cos(r)
+      buf[j + 3] = Math.sin(r)
+    }
+
+    // Phase 2 – 19 961 fleurs réparties sur tout le conteneur
+    for (let i = 20; i < 19981; i++) {
+      const r = Math.random() * TAU
+      const j = i * 4
+      buf[j]     = Math.random() * W
+      buf[j + 1] = Math.random() * H
+      buf[j + 2] = Math.cos(r)
+      buf[j + 3] = Math.sin(r)
+    }
+    this.positions = buf
+  }
+
+  // Trace les fleurs [from, to[ sans jamais effacer le canvas
+  _flush(from, to) {
+    const ctx = this.ctx
+    const img = this.img
+    const buf = this.positions
+    const s   = this._fs
+    const hs  = s / 2
+
+    for (let i = from; i < to; i++) {
+      const j = i * 4
+      // setTransform remplace save/translate/rotate/restore → 1 appel au lieu de 4
+      ctx.setTransform(buf[j + 2], buf[j + 3], -buf[j + 3], buf[j + 2], buf[j], buf[j + 1])
+      ctx.drawImage(img, -hs, -hs, s, s)
+    }
+    ctx.setTransform(1, 0, 0, 1, 0, 0)   // reset
+    this.drawn = to
+  }
+
+  _buildTimeline() {
+    const proxy = { n: 0 }
+    const tick  = () => {
+      const n = Math.min(Math.round(proxy.n), 19981)
+      if (n > this.drawn) this._flush(this.drawn, n)
+    }
+
+    this.tl = gsap.timeline({ paused: true })
+      // Phase 1 : 20 fleurs, 2 s — on voit chaque fleur apparaître
+      .to(proxy, { n: 20,    duration: 2,   ease: 'power1.out', onUpdate: tick, onComplete: tick })
+      // Silence de 1.5 s — le spectateur comprend l'échelle
+      .to(proxy, { n: 19981, duration: 4.5, ease: 'power3.in',  onUpdate: tick, onComplete: tick, delay: 1.5 })
+  }
+
+  play() {
+    if (this._played || !this.tl) return
+    this._played = true
+    // Déconnecte le ResizeObserver : canvas gelé pendant l'animation
+    if (this._ro) { this._ro.disconnect(); this._ro = null }
+    this.tl.play()
+  }
+}
+
+let _flowerField = null
+
+export function initFlowerField() {
   const el = document.getElementById('viz-j1a')
   if (!el) return
-  const W = el.clientWidth || 760
-  const H = el.clientHeight || 200
-  const svg = makeSVG(el, W, H)
+  el.innerHTML = ''
+  _flowerField = new FlowerField(el)
+  _flowerField.init()   // async — terminé bien avant que l'utilisateur scroll jusqu'ici
+}
 
-  const flowers = [
-    { rx: 0.06, ry: 0.46, r: 22, bright: true  },
-    { rx: 0.18, ry: 0.24, r: 17, bright: false },
-    { rx: 0.30, ry: 0.62, r: 22, bright: false },
-    { rx: 0.42, ry: 0.20, r: 16, bright: false },
-    { rx: 0.52, ry: 0.52, r: 24, bright: true  },
-    { rx: 0.63, ry: 0.34, r: 17, bright: false },
-    { rx: 0.74, ry: 0.66, r: 19, bright: false },
-    { rx: 0.83, ry: 0.22, r: 16, bright: true  },
-    { rx: 0.91, ry: 0.56, r: 18, bright: true  },
-  ]
-
-  flowers.forEach(f => {
-    drawFlower(svg, W * f.rx, H * f.ry, f.r, '#F29CB7', f.bright ? 0.92 : 0.20)
-  })
+export function playFlowerAnim() {
+  _flowerField?.play()
 }
 
 /* ══════════════════════════════════════════
@@ -583,7 +710,7 @@ export async function initGlobe() {
 /** Lance toutes les visualisations */
 export function initAllViz() {
   vizJourJ()
-  vizJ1An()
+  initFlowerField()   // remplace vizJ1An()
   vizJ15Ans()
   vizJ30Ans()
   vizJ46Ans()

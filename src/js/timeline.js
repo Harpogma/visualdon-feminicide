@@ -5,7 +5,7 @@
 
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { startJourJAnim } from './visualizations.js'
+import { startJourJAnim, playFlowerAnim } from './visualizations.js'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -44,6 +44,8 @@ export function initTimeline() {
 
   /* Index de l'écran JJ - La mort */
   const jourJIdx = Array.from(screens).findIndex(s => s.querySelector('#viz-jour-j'))
+  /* Index de l'écran J-1 an - Floraison */
+  const j1aIdx   = Array.from(screens).findIndex(s => s.id === 'screen-j1a')
 
   /* ── Scroll horizontal pinné ── */
   gsap.to(track, {
@@ -76,6 +78,8 @@ export function initTimeline() {
 
         /* Démarre l'animation des mois quand l'écran JJ entre en vue */
         if (idx === jourJIdx) startJourJAnim()
+        /* Lance la floraison quand l'écran J-1 an entre en vue */
+        if (idx === j1aIdx)   playFlowerAnim()
       },
     },
   })
