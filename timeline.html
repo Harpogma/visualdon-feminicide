@@ -67,32 +67,37 @@
 
         <!-- S3: J — 3 semaines -->
         <div class="timeline-screen" id="screen-j3s">
+          <!-- Flower: same flower.svg, 120% of screen-2 size, enters from left edge to centre -->
+          <div id="flower-s3-wrap" class="flower-s3-wrap" aria-hidden="true">
+            <img class="flower-s3-img" src="/src/assets/svg/flower.svg" alt="" />
+            <!-- One mask path per petal; each becomes visible as its petal falls -->
+            <svg class="petal-holes-s3" viewBox="0 0 263.7 266.59" aria-hidden="true">
+              <path data-pidx="0" fill="#542D72" style="visibility:hidden" d="M155.2,266.59c-31.95-14.59-46.04-52.37-31.46-84.31l8.4-18.39c31.95,14.59,46.04,52.36,31.46,84.31l-8.4,18.39Z"/>
+              <path data-pidx="1" fill="#542D72" style="visibility:hidden" d="M63.62,252.8c-15.1-31.71-1.61-69.71,30.1-84.81l18.26-8.69c15.1,31.71,1.61,69.71-30.1,84.81l-18.26,8.69Z"/>
+              <path data-pidx="2" fill="#542D72" style="visibility:hidden" d="M2.33,183.37c8.82-34,43.57-54.44,77.57-45.62l19.57,5.08c-8.82,34-43.57,54.44-77.57,45.62l-19.57-5.08Z"/>
+              <path data-pidx="3" fill="#542D72" style="visibility:hidden" d="M0,90.78c28.61-20.38,68.37-13.69,88.75,14.91l11.73,16.47c-28.61,20.38-68.37,13.69-88.75-14.91L0,90.78Z"/>
+              <path data-pidx="4" fill="#542D72" style="visibility:hidden" d="M57.74,18.37c35.01,2.78,61.18,33.46,58.4,68.47l-1.6,20.16c-35.01-2.78-61.18-33.46-58.4-68.47l1.6-20.16Z"/>
+              <path data-pidx="5" fill="#542D72" style="visibility:hidden" d="M148.51,0c25.03,24.63,25.36,64.95.72,89.99l-14.18,14.41c-25.03-24.63-25.36-64.95-.72-89.99l14.18-14.41Z"/>
+              <path data-pidx="6" fill="#542D72" style="visibility:hidden" d="M229.85,44.28c3.34,34.96-22.33,66.06-57.29,69.4l-20.13,1.92c-3.34-34.96,22.33-66.06,57.29-69.4l20.13-1.92Z"/>
+              <path data-pidx="7" fill="#542D72" style="visibility:hidden" d="M263.7,130.49c-19.91,28.93-59.56,36.25-88.49,16.34l-16.66-11.46c19.91-28.93,59.56-36.25,88.5-16.34l16.65,11.46Z"/>
+              <path data-pidx="8" fill="#542D72" style="visibility:hidden" d="M234.22,218.28c-33.85,9.36-68.93-10.52-78.29-44.37l-5.39-19.49c33.85-9.36,68.93,10.52,78.29,44.37l5.39,19.49Z"/>
+            </svg>
+          </div>
+          <!-- 6 poem lines; "plus du tout" is the dramatic final line -->
+          <div class="poem-lines-s3" aria-hidden="true">
+            <span class="poem-line-s3">je t'aime</span>
+            <span class="poem-line-s3">un peu</span>
+            <span class="poem-line-s3">beaucoup</span>
+            <span class="poem-line-s3">passionnément</span>
+            <span class="poem-line-s3">à la folie</span>
+            <span class="poem-line-s3">plus du tout</span>
+          </div>
+
           <nav class="nav"><span class="nav-logo">FÉMINICIDE.</span></nav>
           <div class="screen-content">
             <div class="screen-label">J — 3 semaines</div>
             <h2 class="screen-headline">Elle était partie. Elle pensait avoir enfin retrouvé sa liberté.</h2>
-            <div class="viz-container viz-center" id="viz-j3s">
-              <svg viewBox="0 0 700 260" class="flower-poem-svg">
-                <g transform="translate(270,130)">
-                  <ellipse rx="22" ry="52" fill="#F29CB7" opacity=".92" transform="rotate(0)   translate(0,-28)"/>
-                  <ellipse rx="22" ry="52" fill="#F29CB7" opacity=".92" transform="rotate(45)  translate(0,-28)"/>
-                  <ellipse rx="22" ry="52" fill="#F29CB7" opacity=".92" transform="rotate(90)  translate(0,-28)"/>
-                  <ellipse rx="22" ry="52" fill="#F29CB7" opacity=".92" transform="rotate(135) translate(0,-28)"/>
-                  <ellipse rx="22" ry="52" fill="#F29CB7" opacity=".88" transform="rotate(180) translate(0,-28)"/>
-                  <ellipse rx="22" ry="52" fill="#F29CB7" opacity=".88" transform="rotate(225) translate(0,-28)"/>
-                  <ellipse rx="22" ry="52" fill="#F29CB7" opacity=".88" transform="rotate(270) translate(0,-28)"/>
-                  <ellipse rx="22" ry="52" fill="#F29CB7" opacity=".10" transform="rotate(315) translate(0,-28)"/>
-                  <circle r="15" fill="#542D72"/>
-                  <circle r="9"  fill="#F29CB7" opacity=".25"/>
-                </g>
-                <ellipse cx="465" cy="192" rx="18" ry="44" fill="#F29CB7" opacity=".84" transform="rotate(-28,465,192)"/>
-                <text x="492" y="94"  font-size="15" fill="#F29CB7" opacity=".72" font-family="DM Sans,serif" font-style="italic" font-weight="300">Je t'aime,</text>
-                <text x="492" y="118" font-size="15" fill="#F29CB7" opacity=".72" font-family="DM Sans,serif" font-style="italic" font-weight="300">un peu,</text>
-                <text x="492" y="142" font-size="15" fill="#F29CB7" opacity=".72" font-family="DM Sans,serif" font-style="italic" font-weight="300">beaucoup,</text>
-                <text x="492" y="166" font-size="15" fill="#F29CB7" opacity=".72" font-family="DM Sans,serif" font-style="italic" font-weight="300">à la folie,</text>
-                <text x="465" y="196" font-size="10" fill="#F29CB7" opacity=".65" font-family="DM Sans,serif" font-style="italic" text-anchor="middle" transform="rotate(-28,465,200)">plus du tout…</text>
-              </svg>
-            </div>
+            <div class="viz-container viz-center" id="viz-j3s"></div>
             <p class="screen-stat">39 % des féminicides au sein du couple surviennent après la séparation.</p>
           </div>
           <div class="screen-footer">
