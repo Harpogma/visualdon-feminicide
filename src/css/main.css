@@ -466,6 +466,47 @@ body {
   pointer-events: none;
 }
 .flower-poem-svg { width: 100%; max-width: 700px; height: auto; }
+
+/* ══════════════════════════════════════════
+   SCREEN J-3 SEMAINES — flower poem
+   width = 120% of screen-2 flower (90px × 1.2 = 108px)
+══════════════════════════════════════════ */
+.flower-s3-wrap {
+  position: absolute;
+  width: 108px;
+  height: 109px;   /* 108 × 266.59/263.7 */
+  opacity: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.flower-s3-img,
+.petal-holes-s3 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 108px;
+  height: 109px;
+}
+
+.poem-lines-s3 {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  pointer-events: none;
+  z-index: 6;
+}
+
+.poem-line-s3 {
+  font-size: 17px;
+  font-family: var(--font);
+  font-style: italic;
+  font-weight: 300;
+  color: var(--rose);
+  opacity: 0;
+  white-space: nowrap;
+}
 .big-flower-svg  { width: 260px; height: auto; opacity: .9; }
 .man-svg         { width: 380px; height: auto; }
 .swiss-svg       { width: 100%; max-width: 560px; height: auto; }

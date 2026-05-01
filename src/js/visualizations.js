@@ -26,6 +26,19 @@ const FLOWER_PATHS = [
   'M234.22,218.28c-33.85,9.36-68.93-10.52-78.29-44.37l-5.39-19.49c33.85-9.36,68.93,10.52,78.29,44.37l5.39,19.49Z',
 ]
 
+// Clockwise order from 12 o'clock; svgCx/svgCy = petal centroid in SVG viewBox space
+const PETAL_CW = [
+  { pathIdx: 5, svgCx: 142, svgCy:  52, fallY: 250, fallX:   2, rot:   8 },  // 12 o'clock
+  { pathIdx: 6, svgCx: 185, svgCy:  91, fallY: 230, fallX:  25, rot:  20 },  // 2 o'clock
+  { pathIdx: 7, svgCx: 213, svgCy: 133, fallY: 220, fallX:  28, rot:  22 },  // 3 o'clock
+  { pathIdx: 8, svgCx: 198, svgCy: 205, fallY: 200, fallX:  22, rot:  18 },  // 4-5 o'clock
+  { pathIdx: 0, svgCx: 144, svgCy: 220, fallY: 195, fallX:  12, rot:  12 },  // 5-6 o'clock
+  { pathIdx: 1, svgCx:  85, svgCy: 218, fallY: 195, fallX: -15, rot: -12 },  // 7-8 o'clock
+  { pathIdx: 2, svgCx:  49, svgCy: 170, fallY: 210, fallX: -20, rot: -18 },  // 9 o'clock
+  { pathIdx: 3, svgCx:  55, svgCy:  99, fallY: 230, fallX: -18, rot: -22 },  // 10-11 o'clock
+  { pathIdx: 4, svgCx:  79, svgCy:  52, fallY: 240, fallX:  -8, rot: -10 },  // 11 o'clock
+]
+
 /** Crée un SVG responsive dans un conteneur */
 function makeSVG(el, W, H) {
   return d3.select(el)
@@ -891,6 +904,121 @@ export function initFlowerToStem() {
   })
 }
 
+/* ══════════════════════════════════════════
+   J — 3 semaines : fleur + poème des pétales
+   flower.svg à 120% du screen-2 (90px × 1.2 = 108px)
+   5 pétales tombent en même temps que les 5 lignes du poème,
+   puis cascade rapide sur "plus du tout"
+══════════════════════════════════════════ */
+export function initFlowerPoem() {
+  const screen    = document.getElementById('screen-j3s')
+  if (!screen) return
+  const wrapper   = screen.querySelector('.flower-s3-wrap')
+  const poemDiv   = screen.querySelector('.poem-lines-s3')
+  const poemLines = Array.from(screen.querySelectorAll('.poem-line-s3'))
+  if (!wrapper || !poemDiv || poemLines.length < 6) return
+
+  let played = false
+  const FLOWER_W = 108   // 90 (screen 2) × 1.2
+  const FLOWER_H = Math.round(FLOWER_W * 266.59 / 263.7)  // 109
+
+  // Timing constants (seconds)
+  const PETAL_DUR   = 1.8   // fall duration for poem-petal pairs
+  const CASCADE_DUR = 1.2   // fall duration for cascade petals
+  // Absolute time of each poem line in the GSAP timeline:
+  // flower arrival at t=2.6, then 0.5s pause, then lines every 1.0s
+  const POEM_START = 3.1
+  const LINE_GAP   = 1.0
+
+  const observer = new MutationObserver(() => {
+    if (!screen.classList.contains('in-view') || played) return
+    played = true
+    observer.disconnect()
+
+    const W = window.innerWidth
+    const H = window.innerHeight
+    const finalLeft = (W - FLOWER_W) / 2
+    const finalTop  = (H - FLOWER_H) / 2
+
+    // Start off-screen left, vertically centred
+    gsap.set(wrapper, { left: -FLOWER_W - 20, top: finalTop, y: 0, opacity: 0 })
+
+    // Poem container: top-right area of the flower's resting position
+    gsap.set(poemDiv, { left: W / 2 + FLOWER_W / 2 + 18, top: H / 2 - 90 })
+
+    // Poem lines: start invisible, slightly below final position
+    poemLines.forEach(line => gsap.set(line, { opacity: 0, y: 6 }))
+
+    const tl = gsap.timeline()
+
+    // Flower slides in from the left edge (t=0 → t=2.6)
+    tl.to(wrapper, { opacity: 1, duration: 0.6, ease: 'power1.out' })
+      .to(wrapper, { left: finalLeft, duration: 2.4, ease: 'power1.inOut' }, '-=0.4')
+
+    // Lines 1-5: each paired with one petal falling clockwise (1s apart)
+    poemLines.slice(0, 5).forEach((line, i) => {
+      const t = POEM_START + i * LINE_GAP
+      tl.to(line, { opacity: 0.78, y: 0, duration: 0.7, ease: 'power1.out' }, t)
+      tl.call(() => _dropPetal(PETAL_CW[i], wrapper, PETAL_DUR), null, t)
+    })
+
+    // "plus du tout": 1.5s after "à la folie" — then fast cascade of remaining petals
+    const PLUS_T = POEM_START + 4 * LINE_GAP + 1.5
+    tl.to(poemLines[5], { opacity: 0.78, y: 0, duration: 0.7, ease: 'power1.out' }, PLUS_T)
+    tl.call(() => {
+      PETAL_CW.slice(5).forEach((petal, i) => {
+        setTimeout(() => _dropPetal(petal, wrapper, CASCADE_DUR), i * 130)
+      })
+    }, null, PLUS_T)
+  })
+
+  observer.observe(screen, { attributes: true, attributeFilter: ['class'] })
+}
+
+// Drops one petal: creates a fixed clone SVG, reveals the hole mask, animates the fall
+function _dropPetal(petalDef, wrapper, duration) {
+  const wrapRect = wrapper.getBoundingClientRect()
+  const ns   = 'http://www.w3.org/2000/svg'
+  const W    = wrapper.offsetWidth   // 108
+  const H    = wrapper.offsetHeight  // 109
+  const scale = W / 263.7
+
+  // Clone SVG at the wrapper's exact screen position, only this petal's path
+  const cloneSvg = document.createElementNS(ns, 'svg')
+  cloneSvg.setAttribute('viewBox', '0 0 263.7 266.59')
+  Object.assign(cloneSvg.style, {
+    position:      'fixed',
+    width:         `${W}px`,
+    height:        `${H}px`,
+    left:          `${wrapRect.left}px`,
+    top:           `${wrapRect.top}px`,
+    pointerEvents: 'none',
+    zIndex:        '999',
+    overflow:      'visible',
+  })
+  const clonePath = document.createElementNS(ns, 'path')
+  clonePath.setAttribute('d', FLOWER_PATHS[petalDef.pathIdx])
+  clonePath.setAttribute('fill', '#f29cb7')
+  cloneSvg.appendChild(clonePath)
+  document.body.appendChild(cloneSvg)
+
+  // Reveal hole mask for this petal (background-coloured path over the img)
+  const holePath = wrapper.querySelector(`[data-pidx="${petalDef.pathIdx}"]`)
+  if (holePath) holePath.style.visibility = 'visible'
+
+  // Fall: translateY + slight X drift + rotation around petal centroid
+  const cx = Math.round(petalDef.svgCx * scale)
+  const cy = Math.round(petalDef.svgCy * scale)
+  gsap.to(cloneSvg, {
+    y: petalDef.fallY,
+    x: petalDef.fallX,
+    rotation: petalDef.rot,
+    transformOrigin: `${cx}px ${cy}px`,
+    duration,
+    ease: 'power2.in',
+  })
+}
+
 /** Lance toutes les visualisations */
 export function initAllViz() {
   vizJourJ()
@@ -900,4 +1028,5 @@ export function initAllViz() {
   initAdolescenceMap()
   initGlobe()
   initFlowerToStem()
+  initFlowerPoem();
 }
