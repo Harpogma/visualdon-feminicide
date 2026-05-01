@@ -5,7 +5,7 @@
 
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { startJourJAnim, playFlowerAnim, playHomicideGrid } from './visualizations.js'
+import { startJourJAnim, playFlowerAnim, playHomicideGrid, playAdolescenceMap } from './visualizations.js'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -48,6 +48,8 @@ export function initTimeline() {
   const j1aIdx   = Array.from(screens).findIndex(s => s.id === 'screen-j1a')
   /* Index de l'écran J-15 ans - Grille → Fleurs */
   const j15aIdx  = Array.from(screens).findIndex(s => s.id === 'screen-j15a')
+  /* Index de l'écran J+46 ans - Carte Suisse */
+  const j46aIdx  = Array.from(screens).findIndex(s => s.id === 'screen-j46a')
 
   /* ── Scroll horizontal pinné ── */
   gsap.to(track, {
@@ -84,6 +86,8 @@ export function initTimeline() {
         if (idx === j1aIdx)   playFlowerAnim()
         /* Lance la grille animée quand l'écran J-15 ans entre en vue */
         if (idx === j15aIdx)  playHomicideGrid()
+        /* Lance la carte de pousses quand l'écran J+46 ans entre en vue */
+        if (idx === j46aIdx)  playAdolescenceMap()
       },
     },
   })

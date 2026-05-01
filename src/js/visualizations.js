@@ -396,45 +396,92 @@ export function vizJ30Ans() {
 }
 
 /* ══════════════════════════════════════════
-   J-Adolescence — bourgeon + nuage de fleurs
+   J+46 ans — 357 pousses dans la silhouette suisse
 ══════════════════════════════════════════ */
-export function vizJ46Ans() {
-  const el = document.getElementById('viz-j46a')
-  if (!el) return
-  const W = el.clientWidth || 760
-  const H = el.clientHeight || 220
-  const svg = makeSVG(el, W, H)
 
-  // Bourgeon (gauche)
-  const sx = W * 0.22, sy = H * 0.60
-  svg.append('line').attr('x1', sx).attr('y1', sy + 28).attr('x2', sx).attr('y2', sy - 18)
-    .attr('stroke', '#F29CB7').attr('stroke-width', 2.2).attr('opacity', 0.52).attr('stroke-linecap', 'round')
-  svg.append('ellipse').attr('cx', sx - 13).attr('cy', sy - 3).attr('rx', 13).attr('ry', 7)
-    .attr('fill', '#F29CB7').attr('opacity', 0.5).attr('transform', `rotate(-35,${sx - 13},${sy - 3})`)
-  svg.append('ellipse').attr('cx', sx + 13).attr('cy', sy - 10).attr('rx', 13).attr('ry', 7)
-    .attr('fill', '#F29CB7').attr('opacity', 0.5).attr('transform', `rotate(35,${sx + 13},${sy - 10})`)
+const _SWISS_PATH_D = 'M626.72,26.11l12.96,18.05,42.11,21.33h19.44l14.58,11.49-16.2,49.23-8.1,24.61,1.62,27.89,19.44,1.64,53.45,13.13,6.48,16.41,24.3,13.13,37.26,6.56,32.39-31.18,12.96,4.92,8.1,24.61-8.1,50.87,8.1,29.54-30.78-3.28-16.2-14.77-21.06,4.92-9.72,29.54,24.3,57.43-19.44,4.92-22.68-31.18-11.34-1.64-46.97,18.05-32.4-13.13-12.96-34.46-32.39,1.64v47.59l-8.1,18.05-35.63,42.66-3.24,16.41,11.34,27.9-19.44,11.49-14.58-22.97-21.06-19.69,6.48-19.69-35.64-9.85-38.87-32.82-3.24-41.02-16.2-9.85-55.07,47.59,9.72,24.61-25.92,36.1-38.87,22.97-50.21-13.13-42.11,16.41-38.87,8.2-22.68-11.49-14.58-22.97-37.25-37.74,8.1-27.9-12.96-36.1-35.63-4.92-30.78,1.64-37.25,24.61,8.1,21.33-37.25,26.26-22.68-1.64v-16.41l24.3-16.41,4.86-24.61-12.96-11.49,17.82-47.59,48.59-36.1,8.1-47.59,34.01-14.77,61.55-65.64,9.72-14.77-21.06-18.05,29.16-22.97h17.82l12.96,13.13,43.73-4.92,12.96-22.97,24.3-11.49,16.2,4.92,45.35,1.64,53.45-9.85,42.11,3.28-3.24-24.61,21.06-19.69h21.06l22.68,16.41,12.96-3.28,17.82,14.77,59.93-3.28Z'
+const _MAP_W = 889, _MAP_H = 492
 
-  // Nuage de fleurs (centre-droite)
-  const cX = W * 0.60, cY = H * 0.44
-  const cloud = [
-    { a: 0.0,  d: 22, r: 6 }, { a: 0.5,  d: 35, r: 9  }, { a: 1.1,  d: 28, r: 7 },
-    { a: 1.7,  d: 42, r: 8 }, { a: 2.2,  d: 30, r: 10 }, { a: 2.8,  d: 48, r: 6 },
-    { a: 3.3,  d: 24, r: 8 }, { a: 3.9,  d: 38, r: 7  }, { a: 4.4,  d: 52, r: 9 },
-    { a: 4.9,  d: 28, r: 6 }, { a: 5.4,  d: 44, r: 8  }, { a: 5.9,  d: 32, r: 7 },
-    { a: 0.8,  d: 58, r: 6 }, { a: 1.4,  d: 18, r: 5  }, { a: 2.5,  d: 62, r: 7 },
-    { a: 3.6,  d: 16, r: 5 }, { a: 4.8,  d: 66, r: 6  }, { a: 0.25, d: 48, r: 8 },
-    { a: 2.0,  d: 70, r: 7 }, { a: 4.2,  d: 54, r: 9  }, { a: 5.2,  d: 72, r: 6 },
-    { a: 1.0,  d: 80, r: 7 },
-  ]
+function _getContourPositions(n) {
+  const ns = 'http://www.w3.org/2000/svg'
+  const tmpSvg = document.createElementNS(ns, 'svg')
+  tmpSvg.setAttribute('viewBox', `0 0 ${_MAP_W} ${_MAP_H}`)
+  Object.assign(tmpSvg.style, {
+    position: 'fixed', top: '-9999px', left: '-9999px',
+    width: `${_MAP_W}px`, height: `${_MAP_H}px`,
+    visibility: 'hidden', pointerEvents: 'none',
+  })
+  const pathEl = document.createElementNS(ns, 'path')
+  pathEl.setAttribute('d', _SWISS_PATH_D)
+  tmpSvg.appendChild(pathEl)
+  document.body.appendChild(tmpSvg)
 
-  cloud.forEach(f => {
-    const fx = cX + Math.cos(f.a) * f.d
-    const fy = cY + Math.sin(f.a) * f.d * 0.6
-    drawFlower(svg, fx, fy, f.r, '#F29CB7', 0.26 + (f.r / 10) * 0.32)
+  const total = pathEl.getTotalLength()
+  const step = total / n
+  const positions = Array.from({ length: n }, (_, i) => {
+    const d = i * step
+    const pt  = pathEl.getPointAtLength(d)
+    const pt2 = pathEl.getPointAtLength((d + 2) % total)
+    const angle = Math.atan2(pt2.y - pt.y, pt2.x - pt.x) * 180 / Math.PI
+    return { x: pt.x, y: pt.y, angle }
   })
 
-  // Fleur centrale principale
-  drawFlower(svg, cX + 3, cY - 3, 19, '#F29CB7', 1.0)
+  document.body.removeChild(tmpSvg)
+  return positions
+}
+
+let _adolTl = null, _adolPlayed = false
+
+export function initAdolescenceMap() {
+  const el = document.getElementById('viz-j46a')
+  if (!el) return
+
+  const W = el.clientWidth || 760, H = el.clientHeight || 220
+  const mapScale = Math.min(W / _MAP_W, H / _MAP_H)
+  const offX = (W - _MAP_W * mapScale) / 2, offY = (H - _MAP_H * mapScale) / 2
+
+  const N = 357
+  const positions = _getContourPositions(N)
+
+  const svg = d3.select(el).append('svg').attr('width', W).attr('height', H)
+  const g = svg.append('g').attr('transform', `translate(${offX},${offY}) scale(${mapScale})`)
+
+  const BASE_SIZE = 32
+  let rng = 0xBEEF
+  const rnd = () => { rng = (Math.imul(rng, 1664525) + 1013904223) | 0; return (rng >>> 0) / 0x100000000 }
+
+  const imgEls = positions.map(pos => {
+    const svar = 0.7 + rnd() * 0.6   // 0.7 → 1.3
+    const s = BASE_SIZE * svar
+    const hs = s / 2
+    // Orient outward (perp. to tangent, clockwise Swiss border = right-hand outward)
+    // tangent - 90° points away from interior; ±12° jitter for organicity
+    const rot = pos.angle - 90 + (rnd() - 0.5) * 24
+    const img = g.append('image')
+      .attr('href', flowerUrl)
+      .attr('x', pos.x - hs)
+      .attr('y', pos.y - hs)
+      .attr('width', s)
+      .attr('height', s)
+      .node()
+    gsap.set(img, { rotation: rot, scale: 0, opacity: 0, transformOrigin: 'center center' })
+    return img
+  })
+
+  _adolTl = gsap.timeline({ paused: true })
+    .to(imgEls, {
+      scale: 1,
+      opacity: 1,
+      duration: 0.45,
+      stagger: { amount: 4.0, from: 'start' },
+      ease: 'back.out(1.6)',
+    })
+}
+
+export function playAdolescenceMap() {
+  if (_adolPlayed || !_adolTl) return
+  _adolPlayed = true
+  _adolTl.play()
 }
 
 /** Démarre l'animation des mois (appelé quand l'écran JJ entre en vue) */
@@ -850,7 +897,7 @@ export function initAllViz() {
   initFlowerField()   // remplace vizJ1An()
   initHomicideGrid()   // remplace vizJ15Ans()
   vizJ30Ans()
-  vizJ46Ans()
+  initAdolescenceMap()
   initGlobe()
   initFlowerToStem()
 }

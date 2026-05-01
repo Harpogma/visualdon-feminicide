@@ -619,6 +619,13 @@ body {
 .timeline-screen.in-view .morte-center > *:nth-child(3) { transition-delay: .65s; }
 
 /* ══════════════════════════════════════════
+   SCREEN J+46 ANS — carte de pousses
+══════════════════════════════════════════ */
+#viz-j46a {
+  overflow: hidden;
+}
+
+/* ══════════════════════════════════════════
    SCREEN J-15 ANS — grille animée
 ══════════════════════════════════════════ */
 #viz-j15a {
