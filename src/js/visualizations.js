@@ -4,6 +4,7 @@
  */
 
 import * as d3 from 'd3'
+import { feature } from 'topojson-client'
 import { drawFlower, drawCircle } from './flower.js'
 import { INFRACTION_DATA } from './data.js'
 import flowerUrl from '../assets/svg/flower.svg'
@@ -62,30 +63,157 @@ export function vizJourJ() {
 }
 
 /* ══════════════════════════════════════════
-   J-1 an — fleurs éparpillées (4/9 lumineuses)
+   J-1 an — champ de 19 981 fleurs (Canvas)
+   Phase 1 : 20 fleurs au centre, lentement
+   Phase 2 : +19 961 envahissent tout l'espace
+   Perf : bitmap 64px × setTransform × Float32Array
 ══════════════════════════════════════════ */
-export function vizJ1An() {
+class FlowerField {
+  constructor(el) {
+    this.el       = el
+    this.canvas   = null
+    this.ctx      = null
+    this.img      = null        // SVG pré-rastérisé en bitmap 64×64
+    this.positions = null       // Float32Array [x,y,cos,sin] × 19 981
+    this._fs      = 12          // taille courante (px)
+    this.drawn    = 0           // watermark : fleurs déjà tracées
+    this.tl       = null
+    this._played  = false
+    this._ro      = null
+  }
+
+  async init() {
+    this._buildCanvas()
+    await this._bakeImage()
+    this._recompute()
+    this._buildTimeline()
+
+    // Responsive avant démarrage uniquement
+    this._ro = new ResizeObserver(() => {
+      if (this._played) return
+      this.canvas.width  = this.el.clientWidth  || 800
+      this.canvas.height = this.el.clientHeight || 300
+      this._recompute()
+      if (this.tl) this.tl.kill()
+      this.drawn = 0
+      this._buildTimeline()
+    })
+    this._ro.observe(this.el)
+  }
+
+  _buildCanvas() {
+    this.canvas           = document.createElement('canvas')
+    this.canvas.className = 'flower-canvas'
+    this.canvas.width     = this.el.clientWidth  || 800
+    this.canvas.height    = this.el.clientHeight || 300
+    this.el.appendChild(this.canvas)
+    this.ctx = this.canvas.getContext('2d')
+  }
+
+  _bakeImage() {
+    // Charge le SVG une seule fois, rastérisé en canvas 64×64
+    // → drawImage sur bitmap = blit pixel, pas de re-parse SVG
+    return new Promise((resolve, reject) => {
+      const raw = new Image()
+      raw.onload = () => {
+        const bmp = document.createElement('canvas')
+        bmp.width = bmp.height = 64
+        bmp.getContext('2d').drawImage(raw, 0, 0, 64, 64)
+        this.img = bmp
+        resolve()
+      }
+      raw.onerror = reject
+      raw.src = flowerUrl
+    })
+  }
+
+  _recompute() {
+    const W   = this.canvas.width
+    const H   = this.canvas.height
+    // Taille : ≈2× couverture → tapis dense mais formes encore lisibles
+    this._fs  = Math.max(8, Math.min(28,
+      Math.sqrt(W * H * 8 / (Math.PI * 19981))
+    ))
+    const TAU = Math.PI * 2
+    const buf = new Float32Array(19981 * 4)
+
+    // Phase 1 – 20 fleurs groupées au centre
+    for (let i = 0; i < 20; i++) {
+      const a = Math.random() * TAU
+      const d = Math.random() * Math.min(W, H) * 0.18
+      const r = Math.random() * TAU
+      const j = i * 4
+      buf[j]     = W / 2 + Math.cos(a) * d
+      buf[j + 1] = H / 2 + Math.sin(a) * d
+      buf[j + 2] = Math.cos(r)
+      buf[j + 3] = Math.sin(r)
+    }
+
+    // Phase 2 – 19 961 fleurs réparties sur tout le conteneur
+    for (let i = 20; i < 19981; i++) {
+      const r = Math.random() * TAU
+      const j = i * 4
+      buf[j]     = Math.random() * W
+      buf[j + 1] = Math.random() * H
+      buf[j + 2] = Math.cos(r)
+      buf[j + 3] = Math.sin(r)
+    }
+    this.positions = buf
+  }
+
+  // Trace les fleurs [from, to[ sans jamais effacer le canvas
+  _flush(from, to) {
+    const ctx = this.ctx
+    const img = this.img
+    const buf = this.positions
+    const s   = this._fs
+    const hs  = s / 2
+
+    for (let i = from; i < to; i++) {
+      const j = i * 4
+      // setTransform remplace save/translate/rotate/restore → 1 appel au lieu de 4
+      ctx.setTransform(buf[j + 2], buf[j + 3], -buf[j + 3], buf[j + 2], buf[j], buf[j + 1])
+      ctx.drawImage(img, -hs, -hs, s, s)
+    }
+    ctx.setTransform(1, 0, 0, 1, 0, 0)   // reset
+    this.drawn = to
+  }
+
+  _buildTimeline() {
+    const proxy = { n: 0 }
+    const tick  = () => {
+      const n = Math.min(Math.round(proxy.n), 19981)
+      if (n > this.drawn) this._flush(this.drawn, n)
+    }
+
+    this.tl = gsap.timeline({ paused: true })
+      // Phase 1 : 20 fleurs, 2 s — on voit chaque fleur apparaître
+      .to(proxy, { n: 20,    duration: 2,   ease: 'power1.out', onUpdate: tick, onComplete: tick })
+      // Silence de 1.5 s — le spectateur comprend l'échelle
+      .to(proxy, { n: 19981, duration: 4.5, ease: 'power3.in',  onUpdate: tick, onComplete: tick, delay: 1.5 })
+  }
+
+  play() {
+    if (this._played || !this.tl) return
+    this._played = true
+    // Déconnecte le ResizeObserver : canvas gelé pendant l'animation
+    if (this._ro) { this._ro.disconnect(); this._ro = null }
+    this.tl.play()
+  }
+}
+
+let _flowerField = null
+
+export function initFlowerField() {
   const el = document.getElementById('viz-j1a')
   if (!el) return
-  const W = el.clientWidth || 760
-  const H = el.clientHeight || 200
-  const svg = makeSVG(el, W, H)
+  el.innerHTML = ''
+  _flowerField = new FlowerField(el)
+  _flowerField.init()   // async — terminé bien avant que l'utilisateur scroll jusqu'ici
+}
 
-  const flowers = [
-    { rx: 0.06, ry: 0.46, r: 22, bright: true  },
-    { rx: 0.18, ry: 0.24, r: 17, bright: false },
-    { rx: 0.30, ry: 0.62, r: 22, bright: false },
-    { rx: 0.42, ry: 0.20, r: 16, bright: false },
-    { rx: 0.52, ry: 0.52, r: 24, bright: true  },
-    { rx: 0.63, ry: 0.34, r: 17, bright: false },
-    { rx: 0.74, ry: 0.66, r: 19, bright: false },
-    { rx: 0.83, ry: 0.22, r: 16, bright: true  },
-    { rx: 0.91, ry: 0.56, r: 18, bright: true  },
-  ]
-
-  flowers.forEach(f => {
-    drawFlower(svg, W * f.rx, H * f.ry, f.r, '#F29CB7', f.bright ? 0.92 : 0.20)
-  })
+export function playFlowerAnim() {
+  _flowerField?.play()
 }
 
 /* ══════════════════════════════════════════
@@ -366,6 +494,220 @@ function mergeFlowersTransition(flowerEls) {
 }
 
 /* ══════════════════════════════════════════
+   J — Naissance : globe terrestre 3D interactif
+══════════════════════════════════════════ */
+export async function initGlobe() {
+  const el = document.getElementById('viz-naissance')
+  if (!el) return
+
+  el.innerHTML = ''
+  el.style.position = 'relative'
+
+  // ── Calcul dynamique des dimensions ──────────────────────────────────────
+  function measure() {
+    const cW = el.clientWidth  || 560
+    const cH = el.clientHeight || 320
+    // Globe diameter = 80% du plus petit côté du conteneur
+    const diam = Math.min(cW, cH) * 0.80
+    return { W: cW, H: cH, radius: diam / 2 }
+  }
+
+  let { W, H, radius } = measure()
+
+  // ISO 3166-1 numeric code → legislation data
+  const codeMap = {
+    '188': { pays: 'Costa Rica',     cat: 'A', year: 2007, statut: 'Pionnier mondial – Loi 8589' },
+    '320': { pays: 'Guatemala',      cat: 'A', year: 2008, statut: 'Décret 22-2008' },
+    '152': { pays: 'Chili',          cat: 'A', year: 2010, statut: 'Loi 20.480 (étendu en 2020 via Loi Gabriela)' },
+    '222': { pays: 'Salvador',       cat: 'A', year: 2011, statut: 'Loi spéciale intégrale' },
+    '484': { pays: 'Mexique',        cat: 'A', year: 2012, statut: 'Inscrit au Code Pénal Fédéral' },
+    '032':  { pays: 'Argentine',      cat: 'A', year: 2012, statut: 'Article 80 inc. 11 du Code pénal' },
+    '076':  { pays: 'Brésil',         cat: 'A', year: 2015, statut: 'Loi 13.104' },
+    '170': { pays: 'Colombie',       cat: 'A', year: 2015, statut: 'Loi Rosa Elvira Cely' },
+    '470': { pays: 'Malte',          cat: 'A', year: 2022, statut: "Premier pays de l'UE à nommer le crime" },
+    '196': { pays: 'Chypre',         cat: 'A', year: 2022, statut: 'Loi 123(I)/2022' },
+    '191': { pays: 'Croatie',        cat: 'A', year: 2024, statut: 'Réforme du Code Pénal (Mars 2024)' },
+    '380': { pays: 'Italie',         cat: 'A', year: 2025, statut: 'Loi suite au mouvement Giulia Cecchettin' },
+    '724': { pays: 'Espagne',        cat: 'B', year: 2004, statut: "Cadre légal intégral – pas de crime nommé 'féminicide' mais protection stricte" },
+    '250': { pays: 'France',         cat: 'B', year: 2017, statut: "Circonstance aggravante 'en raison du sexe' (Art. 132-77)" },
+    '056':  { pays: 'Belgique',       cat: 'B', year: 2023, statut: 'Loi Stop Féminicide (définition légale sans crime autonome)' },
+    '788': { pays: 'Tunisie',        cat: 'B', year: 2017, statut: 'Loi 58-2017 contre les violences faites aux femmes' },
+    '710': { pays: 'Afrique du Sud', cat: 'B', year: 2024, statut: 'GBVF Act (National Strategic Plan)' },
+  }
+  const SWISS_CODE = '756'
+  const SWISS_GEO  = [8.23, 46.82]
+
+  // Tooltip
+  const tooltip = d3.select(el)
+    .append('div')
+    .attr('class', 'globe-tooltip')
+    .style('opacity', '0')
+
+  // SVG
+  const svg = d3.select(el)
+    .append('svg')
+    .attr('viewBox', `0 0 ${W} ${H}`)
+    .attr('width', '100%')
+    .attr('height', '100%')
+    .style('cursor', 'grab')
+    .style('display', 'block')
+
+  const projection = d3.geoOrthographic()
+    .scale(radius)
+    .translate([W / 2, H / 2])
+    .clipAngle(90)
+    .rotate([-10, -25])
+
+  const pathGen = d3.geoPath().projection(projection)
+
+  // Ocean sphere (référence conservée pour les mises à jour resize)
+  const ocean = svg.append('circle')
+    .attr('cx', W / 2).attr('cy', H / 2).attr('r', radius)
+    .attr('fill', '#3a1e52')
+    .attr('stroke', '#F29CB7').attr('stroke-opacity', 0.10).attr('stroke-width', 1)
+
+  // Graticule grid
+  const graticulePath = svg.append('path')
+    .datum(d3.geoGraticule()())
+    .attr('fill', 'none')
+    .attr('stroke', '#F29CB7')
+    .attr('stroke-opacity', 0.07)
+    .attr('stroke-width', 0.4)
+    .attr('d', pathGen)
+
+  // Load world TopoJSON
+  let world
+  try {
+    world = await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+  } catch (e) {
+    console.error('Globe: échec du chargement world-atlas', e)
+    return
+  }
+
+  const countries = feature(world, world.objects.countries)
+
+  // Country paths
+  const countryPaths = svg.append('g')
+    .selectAll('path')
+    .data(countries.features)
+    .join('path')
+    .attr('fill', d => codeMap[String(d.id)] ? '#F29CB7' : 'none')
+    .attr('fill-opacity', d => {
+      const law = codeMap[String(d.id)]
+      if (!law) return 0
+      return law.cat === 'A' ? 0.78 : 0.36
+    })
+    .attr('stroke', '#F29CB7')
+    .attr('stroke-opacity', d => String(d.id) === SWISS_CODE ? 0.90 : 0.18)
+    .attr('stroke-width', d => String(d.id) === SWISS_CODE ? 1.6 : 0.4)
+    .attr('d', pathGen)
+    .on('mouseover', function (event, d) {
+      const law = codeMap[String(d.id)]
+      if (!law) return
+      isHovering = true
+      d3.select(this).attr('fill-opacity', law.cat === 'A' ? 0.96 : 0.62)
+      const elRect = el.getBoundingClientRect()
+      tooltip
+        .html(
+          `<span class="glob-t-pays">${law.pays}</span>` +
+          `<span class="glob-t-year">${law.year}</span>` +
+          `<span class="glob-t-cat">${law.cat === 'A' ? '● Crime autonome' : '● Circonstance aggravante'}</span>` +
+          `<span class="glob-t-statut">${law.statut}</span>`
+        )
+        .style('opacity', '1')
+        .style('left', (event.clientX - elRect.left + 14) + 'px')
+        .style('top',  (event.clientY - elRect.top  - 10) + 'px')
+    })
+    .on('mousemove', function (event) {
+      const elRect = el.getBoundingClientRect()
+      tooltip
+        .style('left', (event.clientX - elRect.left + 14) + 'px')
+        .style('top',  (event.clientY - elRect.top  - 10) + 'px')
+    })
+    .on('mouseout', function (event, d) {
+      const law = codeMap[String(d.id)]
+      if (law) d3.select(this).attr('fill-opacity', law.cat === 'A' ? 0.78 : 0.36)
+      tooltip.style('opacity', '0')
+      isHovering = false
+    })
+
+  // Switzerland marker — pulsing ring + cross (absent de la loi)
+  const swissG = svg.append('g').attr('class', 'swiss-marker')
+  swissG.append('circle').attr('r', 7)
+    .attr('fill', 'none').attr('stroke', '#F29CB7')
+    .attr('stroke-width', 1.2).attr('class', 'swiss-pulse-ring')
+  swissG.append('circle').attr('r', 2.5)
+    .attr('fill', '#F29CB7').attr('fill-opacity', 0.90)
+  // Cross (Swiss flag)
+  const cs = 3.2
+  swissG.append('rect').attr('x', -0.9).attr('y', -cs).attr('width', 1.8).attr('height', cs * 2)
+    .attr('fill', '#3a1e52').attr('fill-opacity', 0.85)
+  swissG.append('rect').attr('x', -cs).attr('y', -0.9).attr('width', cs * 2).attr('height', 1.8)
+    .attr('fill', '#3a1e52').attr('fill-opacity', 0.85)
+
+  // Rotation state
+  let isHovering = false
+  let isDragging = false
+  let resumeTimer = null
+
+  function redraw() {
+    countryPaths.attr('d', pathGen)
+    graticulePath.attr('d', pathGen)
+    const proj = projection(SWISS_GEO)
+    if (proj) {
+      swissG.attr('transform', `translate(${proj[0]},${proj[1]})`).style('display', null)
+    } else {
+      swissG.style('display', 'none')
+    }
+  }
+
+  // ── ResizeObserver : recalcule viewBox + projection au resize ────────────
+  const ro = new ResizeObserver(() => {
+    const next = measure()
+    if (Math.abs(next.W - W) < 4 && Math.abs(next.H - H) < 4) return
+    W = next.W; H = next.H; radius = next.radius
+    svg.attr('viewBox', `0 0 ${W} ${H}`)
+    projection.scale(radius).translate([W / 2, H / 2])
+    ocean.attr('cx', W / 2).attr('cy', H / 2).attr('r', radius)
+    redraw()
+  })
+  ro.observe(el)
+
+  // Auto-rotation (stops while user interacts or hovers)
+  d3.timer(() => {
+    if (isHovering || isDragging) return
+    const [λ, φ] = projection.rotate()
+    projection.rotate([λ + 0.12, φ])
+    redraw()
+  })
+
+  // Drag to rotate manually
+  svg.call(
+    d3.drag()
+      .on('start', () => {
+        isDragging = true
+        if (resumeTimer) { clearTimeout(resumeTimer); resumeTimer = null }
+        svg.style('cursor', 'grabbing')
+        tooltip.style('opacity', '0')
+      })
+      .on('drag', (event) => {
+        const [λ, φ] = projection.rotate()
+        projection.rotate([
+          λ + event.dx * 0.4,
+          Math.max(-80, Math.min(80, φ - event.dy * 0.3)),
+        ])
+        redraw()
+      })
+      .on('end', () => {
+        svg.style('cursor', 'grab')
+        resumeTimer = setTimeout(() => { isDragging = false }, 2500)
+      })
+  )
+
+  redraw()
+}
+
+/* ══════════════════════════════════════════
    J — Quelques jours: fleur apparaît à gauche puis rejoint le bout de la anse
 ══════════════════════════════════════════ */
 export function initFlowerToStem() {
@@ -413,9 +755,10 @@ export function initFlowerToStem() {
 /** Lance toutes les visualisations */
 export function initAllViz() {
   vizJourJ()
-  vizJ1An()
+  initFlowerField()   // remplace vizJ1An()
   vizJ15Ans()
   vizJ30Ans()
   vizJ46Ans()
+  initGlobe()
   initFlowerToStem()
 }

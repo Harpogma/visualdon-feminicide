@@ -279,11 +279,11 @@ body {
 
 .viz-container {
   flex: 1;
+  min-height: 0;           /* laisse le flex réduire librement */
   display: flex;
   align-items: center;
   justify-content: flex-start;
   position: relative;
-  min-height: 140px;
 }
 
 .viz-center { justify-content: center; }
@@ -326,16 +326,17 @@ body {
   background: none;
   border: 1px solid rgba(242, 156, 183, .35);
   color: var(--rose);
-  padding: 5px 15px;
-  font-size: 10px;
+  padding: 10px 25px;
+  font-size: 12px;
   font-family: var(--font);
   cursor: pointer;
   border-radius: 20px;
-  transition: background .3s, color .3s;
-  opacity: .65;
+  letter-spacing: .1em;
+  transition: background .3s, color .3s, border-color .3s;
+  opacity: .72;
 }
 
-.sources-btn:hover { background: var(--rose); color: var(--violet); opacity: 1; }
+.sources-btn:hover { background: var(--rose); color: var(--violet); border-color: var(--rose); opacity: 1; }
 
 .legend-inline {
   display: flex;
@@ -554,24 +555,20 @@ body {
 ══════════════════════════════════════════ */
 .modal {
   position: fixed;
-  inset: 0;
-  background: rgba(28, 8, 44, .88);
+  bottom: 78px;
+  left: 50%;
   z-index: 200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(4px);
+  pointer-events: none;
+  /* transform: translateX(-50%) géré par GSAP via xPercent: -50 */
 }
-
-.modal.hidden { display: none; }
 
 .modal-content {
   background: var(--vd);
-  border: 1px solid rgba(242, 156, 183, .18);
-  padding: 44px;
-  max-width: 500px;
-  width: 92%;
+  border: 1px solid rgba(242, 156, 183, .22);
+  padding: 28px 32px;
+  width: min(480px, 90vw);
   position: relative;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, .5);
 }
 
 .modal-content h3 { font-size: 18px; font-weight: 400; color: var(--rose); margin-bottom: 20px; }
@@ -620,6 +617,94 @@ body {
 .timeline-screen.in-view .morte-center > *:nth-child(1) { transition-delay: .15s; }
 .timeline-screen.in-view .morte-center > *:nth-child(2) { transition-delay: .4s; }
 .timeline-screen.in-view .morte-center > *:nth-child(3) { transition-delay: .65s; }
+
+/* ══════════════════════════════════════════
+   SCREEN J-1 AN — champ de floraison Canvas
+══════════════════════════════════════════ */
+#viz-j1a {
+  overflow: hidden;   /* clip du canvas aux limites du conteneur */
+}
+
+.flower-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;     /* supprime le gap inline baseline */
+  pointer-events: none;
+}
+
+/* ══════════════════════════════════════════
+   SCREEN NAISSANCE — overrides spécifiques
+══════════════════════════════════════════ */
+#screen-naissance .screen-headline {
+  font-size: clamp(14px, 1.6vw, 24px);
+  margin-bottom: 6px;
+}
+
+#screen-naissance .screen-stat {
+  font-size: clamp(11px, 1.2vw, 16px);
+  margin-bottom: 6px;
+}
+
+/* ══════════════════════════════════════════
+   GLOBE TERRESTRE — tooltip & marqueur CH
+══════════════════════════════════════════ */
+.globe-tooltip {
+  position: absolute;
+  background: rgba(42, 16, 60, 0.94);
+  border: 1px solid rgba(242, 156, 183, 0.30);
+  border-radius: 7px;
+  padding: 10px 14px;
+  pointer-events: none;
+  z-index: 20;
+  max-width: 230px;
+  backdrop-filter: blur(6px);
+  transition: opacity 0.12s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.glob-t-pays {
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  color: #F29CB7;
+  letter-spacing: .03em;
+}
+
+.glob-t-year {
+  font-family: var(--font);
+  font-size: 11px;
+  color: rgba(242, 156, 183, 0.55);
+}
+
+.glob-t-cat {
+  font-family: var(--font);
+  font-size: 10px;
+  color: rgba(242, 156, 183, 0.72);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.glob-t-statut {
+  font-family: var(--font);
+  font-size: 10px;
+  color: rgba(242, 156, 183, 0.48);
+  line-height: 1.45;
+}
+
+/* Pulse ring on the Swiss marker */
+.swiss-pulse-ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: swiss-pulse 2.8s ease-out infinite;
+}
+
+@keyframes swiss-pulse {
+  0%   { transform: scale(1);   stroke-opacity: 0.55; }
+  100% { transform: scale(2.6); stroke-opacity: 0; }
+}
 
 /* ══════════════════════════════════════════
    RESPONSIVE
