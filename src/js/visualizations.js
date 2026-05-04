@@ -6,7 +6,6 @@
 import * as d3 from 'd3'
 import { feature } from 'topojson-client'
 import { drawFlower, drawCircle } from './flower.js'
-import { INFRACTION_DATA } from './data.js'
 import flowerUrl from '../assets/svg/flower.svg'
 import { gsap } from 'gsap'
 import { MorphSVGPlugin } from 'gsap/MorphSVGPlugin'
@@ -366,49 +365,6 @@ export function playHomicideGrid() {
 }
 
 /* ══════════════════════════════════════════
-   J-30 ans — bar chart horizontal des infractions
-══════════════════════════════════════════ */
-export function vizJ30Ans() {
-  const el = document.getElementById('viz-j30a')
-  if (!el) return
-  const W = el.clientWidth || 760
-  const H = el.clientHeight || 220
-  const svg = makeSVG(el, W, H)
-
-  const maxVal = d3.max(INFRACTION_DATA, d => d.valeur)
-  const mL = 238, mR = 80, barH = 22, barGap = 9
-  const chartH = INFRACTION_DATA.length * (barH + barGap)
-  const sY = (H - chartH) / 2
-  const xScale = d3.scaleLinear().domain([0, maxVal]).range([0, W - mL - mR])
-
-  INFRACTION_DATA.forEach((d, i) => {
-    const y = sY + i * (barH + barGap)
-    const isH = d.type.toLowerCase().includes('homicide')
-
-    // Label
-    svg.append('text').attr('x', mL - 12).attr('y', y + barH / 2 + 4)
-      .attr('text-anchor', 'end').attr('font-size', 11)
-      .attr('fill', '#F29CB7').attr('opacity', 0.62)
-      .attr('font-family', 'DM Sans, serif').text(d.type)
-
-    // Fond de barre
-    svg.append('rect').attr('x', mL).attr('y', y)
-      .attr('width', W - mL - mR).attr('height', barH)
-      .attr('fill', '#F29CB7').attr('opacity', 0.055).attr('rx', 2)
-
-    // Barre remplie
-    svg.append('rect').attr('x', mL).attr('y', y)
-      .attr('width', xScale(d.valeur)).attr('height', barH)
-      .attr('fill', '#F29CB7').attr('opacity', isH ? 0.92 : 0.48).attr('rx', 2)
-
-    // Valeur
-    svg.append('text').attr('x', mL + xScale(d.valeur) + 8).attr('y', y + barH / 2 + 4)
-      .attr('font-size', 10).attr('fill', '#F29CB7').attr('opacity', 0.72)
-      .attr('font-family', 'DM Sans, serif').text(d.valeur.toLocaleString('fr-CH'))
-  })
-}
-
-/* ══════════════════════════════════════════
    J+46 ans — 357 pousses dans la silhouette suisse
 ══════════════════════════════════════════ */
 
@@ -659,12 +615,13 @@ export async function initGlobe() {
   function measure() {
     const cW = el.clientWidth  || 560
     const cH = el.clientHeight || 320
-    // Globe diameter = 80% du plus petit côté du conteneur
-    const diam = Math.min(cW, cH) * 0.80
+    // Globe diameter = 75% du plus petit côté (évite les débordements de viewport)
+    const diam = Math.min(cW, cH) * 0.75
     return { W: cW, H: cH, radius: diam / 2 }
   }
 
   let { W, H, radius } = measure()
+  const PAD = 20   // décalage gauche : bord du SVG → centre du globe
 
   // ISO 3166-1 numeric code → legislation data
   const codeMap = {
@@ -703,18 +660,19 @@ export async function initGlobe() {
     .attr('height', '100%')
     .style('cursor', 'grab')
     .style('display', 'block')
+    .style('opacity', '0')
 
   const projection = d3.geoOrthographic()
     .scale(radius)
-    .translate([W / 2, H / 2])
+    .translate([radius + PAD, H / 2])
     .clipAngle(90)
-    .rotate([-10, -25])
+    .rotate([20, 0, 0])
 
   const pathGen = d3.geoPath().projection(projection)
 
   // Ocean sphere (référence conservée pour les mises à jour resize)
   const ocean = svg.append('circle')
-    .attr('cx', W / 2).attr('cy', H / 2).attr('r', radius)
+    .attr('cx', radius + PAD).attr('cy', H / 2).attr('r', radius)
     .attr('fill', '#3a1e52')
     .attr('stroke', '#F29CB7').attr('stroke-opacity', 0.10).attr('stroke-width', 1)
 
@@ -801,6 +759,7 @@ export async function initGlobe() {
   let isHovering = false
   let isDragging = false
   let resumeTimer = null
+  let _phiTween   = null
 
   function redraw() {
     countryPaths.attr('d', pathGen)
@@ -819,8 +778,8 @@ export async function initGlobe() {
     if (Math.abs(next.W - W) < 4 && Math.abs(next.H - H) < 4) return
     W = next.W; H = next.H; radius = next.radius
     svg.attr('viewBox', `0 0 ${W} ${H}`)
-    projection.scale(radius).translate([W / 2, H / 2])
-    ocean.attr('cx', W / 2).attr('cy', H / 2).attr('r', radius)
+    projection.scale(radius).translate([radius + PAD, H / 2])
+    ocean.attr('cx', radius + PAD).attr('cy', H / 2).attr('r', radius)
     redraw()
   })
   ro.observe(el)
@@ -839,6 +798,7 @@ export async function initGlobe() {
       .on('start', () => {
         isDragging = true
         if (resumeTimer) { clearTimeout(resumeTimer); resumeTimer = null }
+        if (_phiTween)   { _phiTween.kill(); _phiTween = null }
         svg.style('cursor', 'grabbing')
         tooltip.style('opacity', '0')
       })
@@ -852,11 +812,29 @@ export async function initGlobe() {
       })
       .on('end', () => {
         svg.style('cursor', 'grab')
-        resumeTimer = setTimeout(() => { isDragging = false }, 2500)
+        // Après 500 ms, ramène φ doucement à 0 (équateur centré)
+        resumeTimer = setTimeout(() => {
+          resumeTimer = null
+          const [, φ] = projection.rotate()
+          if (Math.abs(φ) < 0.5) { isDragging = false; return }
+          const proxy = { phi: φ }
+          _phiTween = gsap.to(proxy, {
+            phi: 0,
+            duration: 0.9,
+            ease: 'power2.out',
+            onUpdate() {
+              const [currentLambda] = projection.rotate()
+              projection.rotate([currentLambda, proxy.phi])
+              redraw()
+            },
+            onComplete() { _phiTween = null; isDragging = false },
+          })
+        }, 500)
       })
   )
 
   redraw()
+  svg.transition().duration(900).ease(d3.easeQuadOut).style('opacity', '1')
 }
 
 /* ══════════════════════════════════════════
@@ -1066,7 +1044,6 @@ export function initAllViz() {
   vizJourJ()
   initFlowerField()
   initHomicideGrid()
-  vizJ30Ans()
   initAdolescenceMap()
   initGlobe()
   initFlowerToStem()

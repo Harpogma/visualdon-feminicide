@@ -531,51 +531,184 @@ body {
 }
 
 /* ══════════════════════════════════════════
-   SOURCES SCREEN
+   CONCLUSION SCREEN
 ══════════════════════════════════════════ */
-.sources-content { padding-top: 80px; }
-.sources-content .screen-headline { font-size: clamp(20px, 2.6vw, 36px); margin-bottom: 40px; }
-
-.sources-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 26px;
-  max-width: 860px;
-  margin-bottom: 44px;
+.conclusion-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 36px;
+  padding: 60px 72px 40px;
+  max-width: 900px;
 }
 
-.source-item { display: flex; flex-direction: column; gap: 6px; }
+.conclusion-narrative { display: flex; flex-direction: column; gap: 14px; }
 
-.source-label {
+.conclusion-title {
+  font-size: clamp(22px, 2.8vw, 40px);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--rose);
+  margin: 0;
+}
+
+.conclusion-accroche {
+  font-size: clamp(13px, 1.1vw, 16px);
+  font-weight: 300;
+  line-height: 1.8;
+  opacity: .78;
+  max-width: 700px;
+  margin: 0;
+}
+
+.conclusion-cta-title {
+  font-size: clamp(13px, 1.1vw, 17px);
+  font-weight: 500;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  opacity: .55;
+  margin: 8px 0 0;
+}
+
+/* Action cards — parent container resets the in-view cascade */
+#screen-sources .action-cards {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+.action-cards {
+  display: flex;
+  gap: 20px;
+}
+
+.action-card {
+  flex: 1;
+  border: 1px solid color-mix(in srgb, var(--rose) 22%, transparent);
+  border-radius: 8px;
+  padding: 22px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .5s ease, transform .5s ease, border-color .3s;
+}
+
+.action-card:nth-child(1) { transition-delay: .1s; }
+.action-card:nth-child(2) { transition-delay: .25s; }
+.action-card:nth-child(3) { transition-delay: .4s; }
+
+.in-view .action-card {
+  opacity: 1;
+  transform: none;
+}
+
+.action-card:hover { border-color: color-mix(in srgb, var(--rose) 55%, transparent); }
+
+.action-card-label {
   font-size: 9px;
   text-transform: uppercase;
-  letter-spacing: .12em;
-  opacity: .38;
+  letter-spacing: .14em;
+  color: var(--rose);
+  opacity: .7;
 }
 
-.source-item a {
-  color: var(--rose);
-  text-decoration: none;
+.action-card-desc {
   font-size: 12px;
   font-weight: 300;
-  opacity: .72;
-  border-bottom: 1px solid var(--rf);
-  padding-bottom: 4px;
+  line-height: 1.75;
+  opacity: .7;
+  margin: 0;
+  flex: 1;
+}
+
+.action-btn {
+  display: inline-block;
+  color: var(--rose);
+  font-size: 11px;
+  font-weight: 500;
+  text-decoration: none;
+  letter-spacing: .04em;
+  opacity: .65;
+  border-bottom: 1px solid color-mix(in srgb, var(--rose) 35%, transparent);
+  padding-bottom: 2px;
+  align-self: flex-start;
   transition: opacity .3s;
 }
 
-.source-item a:hover { opacity: 1; }
+.action-btn:hover { opacity: 1; }
 
-.credits { max-width: 560px; opacity: .5; }
-.credits p { font-size: 13px; line-height: 1.9; font-weight: 300; margin-bottom: 18px; }
+/* Sources accordion */
+.sources-accordion {
+  border-top: 1px solid rgba(255,255,255,.08);
+  padding-top: 16px;
+}
+
+.sources-accordion-toggle {
+  list-style: none;
+  cursor: pointer;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  opacity: .4;
+  user-select: none;
+  transition: opacity .3s;
+}
+
+.sources-accordion-toggle::-webkit-details-marker { display: none; }
+.sources-accordion-toggle::marker { display: none; }
+.sources-accordion-toggle:hover { opacity: .7; }
+
+.sources-accordion[open] .sources-accordion-toggle { opacity: .6; }
+
+.sources-accordion-body {
+  padding-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sources-methodologie {
+  font-size: 11px;
+  font-weight: 300;
+  line-height: 1.8;
+  opacity: .5;
+  max-width: 660px;
+  margin: 0;
+}
+
+.sources-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px 32px;
+}
+
+.sources-list li { font-size: 11px; font-weight: 300; opacity: .5; }
+
+.sources-list a {
+  color: var(--rose);
+  text-decoration: none;
+  opacity: .75;
+  transition: opacity .3s;
+}
+
+.sources-list a:hover { opacity: 1; }
+
+/* Footer */
+.conclusion-footer { padding-top: 4px; }
 
 .back-home-btn {
   display: inline-block;
   color: var(--rose);
-  font-size: 13px;
-  opacity: .65;
+  font-size: 12px;
+  opacity: .5;
   transition: opacity .3s;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .back-home-btn:hover { opacity: 1; }
@@ -713,6 +846,11 @@ body {
 /* ══════════════════════════════════════════
    SCREEN NAISSANCE — overrides spécifiques
 ══════════════════════════════════════════ */
+#viz-naissance {
+  justify-content: flex-start;
+  overflow: visible;
+}
+
 #screen-naissance .screen-headline {
   font-size: clamp(14px, 1.6vw, 24px);
   margin-bottom: 6px;
