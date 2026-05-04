@@ -5,7 +5,7 @@
 
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { startJourJAnim, playFlowerAnim, playHomicideGrid, playAdolescenceMap } from './visualizations.js'
+import { startJourJAnim, playFlowerAnim, playHomicideGrid, playAdolescenceMap, manageLottieWalker } from './visualizations.js'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -46,10 +46,15 @@ export function initTimeline() {
   const jourJIdx = Array.from(screens).findIndex(s => s.querySelector('#viz-jour-j'))
   /* Index de l'écran J-1 an - Floraison */
   const j1aIdx   = Array.from(screens).findIndex(s => s.id === 'screen-j1a')
+  /* Index de l'écran J-2 ans - Homme marchant (Lottie) */
+  const j2aIdx   = Array.from(screens).findIndex(s => s.id === 'screen-j2a')
   /* Index de l'écran J-15 ans - Grille → Fleurs */
   const j15aIdx  = Array.from(screens).findIndex(s => s.id === 'screen-j15a')
   /* Index de l'écran J+46 ans - Carte Suisse */
   const j46aIdx  = Array.from(screens).findIndex(s => s.id === 'screen-j46a')
+
+  /* Dernier idx connu — détecte les transitions de slide */
+  let _prevIdx = -1
 
   /* ── Scroll horizontal pinné ── */
   gsap.to(track, {
@@ -88,6 +93,14 @@ export function initTimeline() {
         if (idx === j15aIdx)  playHomicideGrid()
         /* Lance la carte de pousses quand l'écran J+46 ans entre en vue */
         if (idx === j46aIdx)  playAdolescenceMap()
+
+        /* Play/pause Lottie sur entrée et sortie de screen-j2a */
+        if (j2aIdx >= 0 && idx !== _prevIdx) {
+          if (idx === j2aIdx || _prevIdx === j2aIdx) {
+            manageLottieWalker(idx === j2aIdx)
+          }
+        }
+        _prevIdx = idx
       },
     },
   })

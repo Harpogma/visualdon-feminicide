@@ -509,8 +509,26 @@ body {
   white-space: nowrap;
 }
 .big-flower-svg  { width: 260px; height: auto; opacity: .9; }
-.man-svg         { width: 380px; height: auto; }
 .swiss-svg       { width: 100%; max-width: 560px; height: auto; }
+
+/* ══════════════════════════════════════════
+   SCREEN J-2 ANS — walker Lottie
+══════════════════════════════════════════ */
+#viz-j2a {
+  overflow: hidden;
+}
+
+#walker-wrap {
+  width: 300px;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+#walker-lottie {
+  display: block;
+  width: 300px;
+  height: 300px;
+}
 
 /* ══════════════════════════════════════════
    SOURCES SCREEN

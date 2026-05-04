@@ -1019,14 +1019,57 @@ function _dropPetal(petalDef, wrapper, duration) {
   })
 }
 
+/* ══════════════════════════════════════════
+   J — 2 ans : homme marchant (Lottie play/pause)
+   Déclenchement : présence de la slide à l'écran
+     play()  quand screen-j2a devient active
+     pause() quand l'utilisateur quitte la slide
+══════════════════════════════════════════ */
+let _walkerLottie = null
+let _walkerActive = false
+
+async function _initWalkerLottie() {
+  await customElements.whenDefined('dotlottie-wc')
+  const wc = document.getElementById('walker-lottie')
+  if (!wc) return
+
+  // dotLottie est instancié dans connectedCallback (upgrade synchrone)
+  const player = wc.dotLottie
+  if (!player) return
+
+  const onReady = () => {
+    _walkerLottie = player
+    // Si la slide est déjà active quand le chargement réseau se termine
+    if (_walkerActive) player.play()
+  }
+
+  if (player.isLoaded) {
+    onReady()
+  } else {
+    player.addEventListener('load', onReady)
+  }
+}
+
+export function manageLottieWalker(isActive) {
+  _walkerActive = isActive
+  if (!_walkerLottie) return  // onReady() prendra le relais si le player n'est pas encore prêt
+
+  if (isActive) {
+    _walkerLottie.play()
+  } else {
+    _walkerLottie.pause()
+  }
+}
+
 /** Lance toutes les visualisations */
 export function initAllViz() {
   vizJourJ()
-  initFlowerField()   // remplace vizJ1An()
-  initHomicideGrid()   // remplace vizJ15Ans()
+  initFlowerField()
+  initHomicideGrid()
   vizJ30Ans()
   initAdolescenceMap()
   initGlobe()
   initFlowerToStem()
-  initFlowerPoem();
+  initFlowerPoem()
+  _initWalkerLottie()
 }
