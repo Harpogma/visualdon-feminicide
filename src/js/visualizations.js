@@ -975,6 +975,20 @@ export function initFlowerPoem() {
   observer.observe(screen, { attributes: true, attributeFilter: ['class'] })
 }
 
+// Fallen petal clone SVGs tracked for cleanup when leaving screen-j3s
+let _flowerPoemClones = []
+
+export function cleanupFlowerPoem() {
+  if (_flowerPoemClones.length === 0) return
+  const toRemove = _flowerPoemClones.splice(0)
+  gsap.to(toRemove, {
+    opacity: 0,
+    duration: 0.35,
+    stagger: 0.02,
+    onComplete: () => toRemove.forEach(c => c.remove()),
+  })
+}
+
 // Drops one petal: creates a fixed clone SVG, reveals the hole mask, animates the fall
 function _dropPetal(petalDef, wrapper, duration) {
   const wrapRect = wrapper.getBoundingClientRect()
@@ -1001,6 +1015,7 @@ function _dropPetal(petalDef, wrapper, duration) {
   clonePath.setAttribute('fill', '#f29cb7')
   cloneSvg.appendChild(clonePath)
   document.body.appendChild(cloneSvg)
+  _flowerPoemClones.push(cloneSvg)
 
   // Reveal hole mask for this petal (background-coloured path over the img)
   const holePath = wrapper.querySelector(`[data-pidx="${petalDef.pathIdx}"]`)
