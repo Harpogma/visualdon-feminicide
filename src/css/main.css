@@ -30,7 +30,7 @@ body {
    NAV
 ══════════════════════════════════════════ */
 .nav {
-  position: absolute;
+  position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 100;
   padding: 22px 48px;
@@ -44,6 +44,7 @@ body {
   color: var(--rose);
   pointer-events: auto;
   font-style: italic;
+  text-decoration: none;
 }
 
 /* ══════════════════════════════════════════
