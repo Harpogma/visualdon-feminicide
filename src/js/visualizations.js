@@ -862,7 +862,7 @@ export function initFlowerToStem() {
     const FLOWER_CY = Math.round(133.3  / 266.59 * FLOWER_H)
 
     // Convert CSS top:50% + translateY(-50%) to an explicit pixel value so GSAP can tween from it
-    gsap.set(flowerEl, { top: window.innerHeight / 2 - FLOWER_H / 2, y: 0 })
+    gsap.set(flowerEl, { left: window.innerWidth - FLOWER_W - 60, top: window.innerHeight / 2 - FLOWER_H / 2, y: 0 })
 
     // Stem tip: handle top at (17.77, 4.15) in SVG viewBox 113.5 × 255.5
     const stemX = vaseRelLeft + (17.77 / 113.5) * vaseR.width
@@ -919,7 +919,7 @@ export function initFlowerPoem() {
     const finalTop  = (H - FLOWER_H) / 2
 
     // Start off-screen left, vertically centred
-    gsap.set(wrapper, { left: -FLOWER_W - 20, top: finalTop, y: 0, opacity: 0 })
+    gsap.set(wrapper, { left: -FLOWER_W, top: finalTop, y: 0, opacity: 0 })
 
     // Poem container: top-right area of the flower's resting position
     gsap.set(poemDiv, { left: W / 2 + FLOWER_W / 2 + 18, top: H / 2 - 90 })

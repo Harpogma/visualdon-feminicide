@@ -19,9 +19,9 @@ export function initTimeline() {
   /* ── Création des points de progression ── */
   for (let i = 0; i < N; i++) {
     const dot = document.createElement('div')
-    dot.className = 'progress-dot' + (i === 0 ? ' active' : '')
+    dot.className = 'progress-dot' + (i === N - 1 ? ' active' : '')
     dot.addEventListener('click', () => {
-      const progress = i / (N - 1)
+      const progress = 1 - (i / (N - 1))
       const sts = ScrollTrigger.getAll()
       const st  = sts.find(t => t.vars && t.vars.trigger === wrapper)
       if (st) {
@@ -59,8 +59,9 @@ export function initTimeline() {
   let _prevIdx = -1
 
   /* ── Scroll horizontal pinné ── */
-  gsap.to(track, {
-    x: () => -(track.scrollWidth - window.innerWidth),
+  gsap.fromTo(track,
+    { x: () => -(track.scrollWidth - window.innerWidth) },
+    { x: 0,
     ease: 'none',
     scrollTrigger: {
       trigger: wrapper,
@@ -71,7 +72,7 @@ export function initTimeline() {
       anticipatePin: 1,
       invalidateOnRefresh: true,
       onUpdate(self) {
-        const idx = Math.round(self.progress * (N - 1))
+        const idx = Math.round((1 - self.progress) * (N - 1))
 
         /* Dots actifs */
         document.querySelectorAll('.progress-dot').forEach((d, i) =>
