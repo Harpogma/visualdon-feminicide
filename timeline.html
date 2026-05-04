@@ -20,53 +20,203 @@
     <div id="timeline-wrapper">
       <div id="timeline-track">
 
-        <!-- S0: MORTE -->
-        <div class="timeline-screen" id="screen-morte">
-          <div class="morte-center">
-            <span class="morte-cross">†</span>
-            <span class="morte-name">Marie</span>
-            <span class="morte-date">23.01.2026</span>
-          </div>
-        </div>
-
-        <!-- S1: JJ — La mort -->
-        <div class="timeline-screen" id="screen-jour-j">
-          <div class="screen-content">
-            <div class="screen-label">JJ — La mort</div>
-            <h2 class="screen-headline">Le temps passe. Le silence s'installe. Le cycle recommence.</h2>
-            <div class="viz-container" id="viz-jour-j"></div>
-            <p class="screen-stat">En Suisse, 1 femme est victime d'un féminicide tous les 17 jours.</p>
-          </div>
-          <div class="screen-footer">
-            <button class="sources-btn" data-screen="jour-j">● Sources</button>
-            <div class="footer-spacer"></div>
-            <span class="footer-date">01.01.2020</span>
-            <span class="footer-next">26.01.2020</span>
-          </div>
-        </div>
-
-        <!-- S2: J — Quelques jours -->
-        <div class="timeline-screen" id="screen-j3j">
-          <img src="/src/assets/svg/flower.svg" class="flower-left" aria-hidden="true" />
-          <div class="screen-content">
-            <div class="screen-label">J — Quelques jours</div>
-            <h2 class="screen-headline">Marie est morte chez elle. Là où les murs auraient dû la protéger.</h2>
-            <div class="viz-container viz-center" id="viz-j3j">
-              <img src="/src/assets/svg/vase.svg" class="vase-svg" alt="vase" />
+        <!-- S0: Sources & Crédits -->
+        <div class="timeline-screen" id="screen-sources">
+          <div class="screen-content sources-content">
+            <h2 class="screen-headline">Sources &amp; Crédits</h2>
+            <div class="sources-grid">
+              <div class="source-item">
+                <span class="source-label">Féminicides recensés</span>
+                <a href="https://www.stopfemizid.ch/francais" target="_blank" rel="noopener">stopfemizid.ch</a>
+              </div>
+              <div class="source-item">
+                <span class="source-label">Violence domestique</span>
+                <a href="https://www.ebg.admin.ch/dam/fr/sd-web/YXpdk4fA4TpV/a4_chiffres-de-la-violence-domestique-en-suisse.pdf" target="_blank" rel="noopener">Bureau fédéral de l'égalité (EBG)</a>
+              </div>
+              <div class="source-item">
+                <span class="source-label">Statistiques homicides</span>
+                <a href="https://www.bfs.admin.ch/bfs/fr/home/actualites/quoi-de-neuf.assetdetail.36456053.html" target="_blank" rel="noopener">Office fédéral de la statistique (OFS)</a>
+              </div>
+              <div class="source-item">
+                <span class="source-label">Profil des auteurs</span>
+                <a href="https://www.24heures.ch/suisse-le-profil-des-auteurs-de-feminicides-190676825350" target="_blank" rel="noopener">24 Heures</a>
+              </div>
+              <div class="source-item">
+                <span class="source-label">Féminicide après rupture</span>
+                <a href="https://www.24heures.ch/feminicide-la-rupture-moment-fatal-pour-les-femmes-247104825849" target="_blank" rel="noopener">24 Heures — La rupture, moment fatal</a>
+              </div>
+              <div class="source-item">
+                <span class="source-label">Campagne nationale</span>
+                <a href="https://www.edi.admin.ch/fr/violence-domestique-sexuelle-et-de-genre-la-premiere-campagne-nationale-de-prevention-est-lancee" target="_blank" rel="noopener">Département fédéral de l'intérieur</a>
+              </div>
             </div>
-            <p class="screen-stat">Plus de 50 % des féminicides sont commis au domicile de la victime.</p>
-          </div>
-          <div class="screen-footer">
-            <button class="sources-btn" data-screen="j-3-jours">● Sources</button>
-            <div class="footer-spacer"></div>
-            <span class="footer-date">03.03.2020</span>
-            <span class="footer-next">18.03.2020</span>
+            <div class="credits">
+              <p>Un projet de sensibilisation au féminicide en Suisse.<br>Marie est un personnage fictif. Ses statistiques sont réelles.</p>
+              <a href="index.html" class="back-home-btn">← Retour à l'accueil</a>
+            </div>
           </div>
         </div>
 
-        <!-- S3: J — 3 semaines -->
+        <!-- S1: J — Naissance -->
+        <div class="timeline-screen" id="screen-naissance">
+          <div class="screen-content">
+            <div class="screen-label">J — Naissance</div>
+            <h2 class="screen-headline">Marie naît. En Suisse.</h2>
+            <div class="viz-container viz-center" id="viz-naissance"></div>
+            <p class="screen-stat">
+              Le mot « féminicide » est toujours absent du Code pénal suisse.<br>
+              À ce jour, seuls 25 pays dans le monde reconnaissent légalement ce crime pour ce qu'il est.
+            </p>
+          </div>
+          <div class="screen-footer">
+            <div></div>
+            <button class="sources-btn" data-screen="j-46-ans">● Sources</button>
+            <div class="footer-spacer"></div>
+            <span class="footer-date">08.02.2021</span>
+            <span class="footer-next">16.02.2021</span>
+          </div>
+        </div>
+
+        <!-- S2: J — Adolescence -->
+        <div class="timeline-screen" id="screen-j46a">
+          <div class="screen-content">
+            <div class="screen-label">J — Adolescence</div>
+            <h2 class="screen-headline">Marie a grandi en Suisse. Un pays stable, un pays sûr. Du moins, en apparence.</h2>
+            <div class="viz-container" id="viz-j46a"></div>
+            <p class="screen-stat">
+              En 2025, 357 enfants ont été victimes d'actes sexuels dans un cadre familial :
+              279 filles et 78 garçons. Les filles sont 3,6 fois plus exposées.
+            </p>
+          </div>
+          <div class="screen-footer">
+            <button class="sources-btn" data-screen="j-46-ans">● Sources</button>
+            <div class="footer-spacer"></div>
+            <span class="footer-date">12.01.2021</span>
+            <span class="footer-next">17.01.2021</span>
+          </div>
+        </div>
+
+        <!-- S3: J — 30 ans -->
+        <div class="timeline-screen" id="screen-j30a">
+          <div class="screen-content">
+            <div class="screen-label">J — 30 ans</div>
+            <h2 class="screen-headline">D'abord un éclat de voix, puis un coup. Rarement, puis constamment.</h2>
+            <div class="viz-container" id="viz-j30a"></div>
+            <p class="screen-stat">
+              19 918 infractions de violence domestique enregistrées en 2023.<br>
+              Ce n'est que la pointe de l'iceberg.
+            </p>
+          </div>
+          <div class="screen-footer">
+            <button class="sources-btn" data-screen="j-30-ans">● Sources</button>
+            <div class="footer-spacer"></div>
+            <span class="footer-date">25.12.2020</span>
+            <span class="footer-next">30.12.2020</span>
+          </div>
+        </div>
+
+        <!-- S4: J — 15 ans -->
+        <div class="timeline-screen" id="screen-j15a">
+          <div class="screen-content">
+            <div class="screen-label">J — 15 ans</div>
+            <h2 class="screen-headline">Le danger porte un nom familier.</h2>
+            <div class="viz-container" id="viz-j15a"></div>
+            <p class="screen-stat">
+              Entre 2020 et 2025, 163 personnes ont été tuées par un proche.<br>
+              Parmi elles, 125 femmes pour 38 hommes.
+            </p>
+          </div>
+          <div class="screen-footer">
+            <button class="sources-btn" data-screen="j-15-ans">● Sources</button>
+            <div class="footer-spacer"></div>
+            <span class="footer-date">21.09.2020</span>
+            <span class="footer-next">04.11.2020</span>
+          </div>
+        </div>
+
+        <!-- S5: J — 2 ans -->
+        <div class="timeline-screen" id="screen-j2a">
+          <div class="screen-content">
+            <div class="screen-label">J — 2 ans</div>
+            <h2 class="screen-headline">Qui était-il ? Un voisin, un collègue, un mari sans histoire.</h2>
+            <div class="viz-container" id="viz-j2a" style="padding-left: 80px;">
+              <div id="walker-wrap">
+                <dotlottie-wc
+                  id="walker-lottie"
+                  src="https://lottie.host/f2d22f3b-989e-4379-85e4-4cf4120871f0/Xsh02fjZcq.lottie"
+                  loop
+                  speed="1"
+                ></dotlottie-wc>
+              </div>
+            </div>
+            <p class="screen-stat">
+              L'auteur type a 47 ans, un emploi et un casier judiciaire vierge.<br>
+              Le danger n'a pas de visage monstrueux.
+            </p>
+          </div>
+          <div class="screen-footer">
+            <button class="sources-btn" data-screen="j-2-ans">● Sources</button>
+            <div class="footer-spacer"></div>
+            <span class="footer-date">24.08.2020</span>
+            <span class="footer-next">02.09.2020</span>
+          </div>
+        </div>
+
+        <!-- S6: J — 1 an -->
+        <div class="timeline-screen" id="screen-j1a">
+          <div class="screen-content">
+            <div class="screen-label">J — 1 an</div>
+            <h2 class="screen-headline">D'abord un éclat de voix, puis un coup. Rarement, puis constamment.</h2>
+            <div class="viz-container" id="viz-j1a" style="padding-left:40px"></div>
+            <p class="screen-stat">
+              19 918 infractions de violence domestique enregistrées en 2023.<br>
+              Ce n'est que la pointe de l'iceberg.
+            </p>
+          </div>
+          <div class="screen-footer">
+            <button class="sources-btn" data-screen="j-1-an">● Sources</button>
+            <div class="footer-spacer"></div>
+            <span class="footer-date">14.06.2020</span>
+            <span class="footer-next">20.06.2020</span>
+          </div>
+        </div>
+
+        <!-- S7: J — 2 mois -->
+        <div class="timeline-screen" id="screen-j2m">
+          <div class="screen-content">
+            <div class="screen-label">J — 2 mois</div>
+            <h2 class="screen-headline">Elle n'a jamais osé briser le silence. La peur était plus forte que l'appel à l'aide.</h2>
+            <div class="viz-container viz-center" id="viz-j2m">
+              <svg viewBox="0 0 320 280" class="big-flower-svg">
+                <g transform="translate(160,140)">
+                  <ellipse rx="30" ry="68" fill="#F29CB7" opacity=".93" transform="rotate(0)   translate(0,-36)"/>
+                  <ellipse rx="30" ry="68" fill="#F29CB7" opacity=".93" transform="rotate(36)  translate(0,-36)"/>
+                  <ellipse rx="30" ry="68" fill="#F29CB7" opacity=".93" transform="rotate(72)  translate(0,-36)"/>
+                  <ellipse rx="30" ry="68" fill="#F29CB7" opacity=".93" transform="rotate(108) translate(0,-36)"/>
+                  <ellipse rx="30" ry="68" fill="#F29CB7" opacity=".93" transform="rotate(144) translate(0,-36)"/>
+                  <ellipse rx="30" ry="68" fill="#F29CB7" opacity=".93" transform="rotate(180) translate(0,-36)"/>
+                  <ellipse rx="30" ry="68" fill="#F29CB7" opacity=".93" transform="rotate(216) translate(0,-36)"/>
+                  <ellipse rx="30" ry="68" fill="#F29CB7" opacity=".93" transform="rotate(252) translate(0,-36)"/>
+                  <ellipse rx="30" ry="68" fill="#F29CB7" opacity=".93" transform="rotate(288) translate(0,-36)"/>
+                  <ellipse rx="30" ry="68" fill="#F29CB7" opacity=".93" transform="rotate(324) translate(0,-36)"/>
+                  <circle r="22" fill="#542D72"/>
+                  <circle r="14" fill="#F29CB7" opacity=".18"/>
+                </g>
+              </svg>
+            </div>
+            <p class="screen-stat">En Suisse, seules 10 à 22 % des victimes de violence domestique déposent plainte.</p>
+          </div>
+          <div class="screen-footer">
+            <button class="sources-btn" data-screen="j-2-mois">● Sources</button>
+            <div class="footer-spacer"></div>
+            <span class="footer-date">16.05.2020</span>
+            <span class="footer-next">17.05.2020</span>
+          </div>
+        </div>
+
+        <!-- S8: J — 3 semaines -->
         <div class="timeline-screen" id="screen-j3s">
-          <!-- Flower: same flower.svg, 120% of screen-2 size, enters from left edge to centre -->
+          <!-- Flower: same flower.svg, 120% of screen-9, enters from right edge to centre -->
           <div id="flower-s3-wrap" class="flower-s3-wrap" aria-hidden="true">
             <img class="flower-s3-img" src="/src/assets/svg/flower.svg" alt="" />
             <!-- One mask path per petal; each becomes visible as its petal falls -->
@@ -106,197 +256,47 @@
           </div>
         </div>
 
-        <!-- S4: J — 2 mois -->
-        <div class="timeline-screen" id="screen-j2m">
+        <!-- S9: J — Quelques jours -->
+        <div class="timeline-screen" id="screen-j3j">
+          <img src="/src/assets/svg/flower.svg" class="flower-left" aria-hidden="true" />
           <div class="screen-content">
-            <div class="screen-label">J — 2 mois</div>
-            <h2 class="screen-headline">Elle n'a jamais osé briser le silence. La peur était plus forte que l'appel à l'aide.</h2>
-            <div class="viz-container viz-center" id="viz-j2m">
-              <svg viewBox="0 0 320 280" class="big-flower-svg">
-                <g transform="translate(160,140)">
-                  <ellipse rx="30" ry="68" fill="#F29CB7" opacity=".93" transform="rotate(0)   translate(0,-36)"/>
-                  <ellipse rx="30" ry="68" fill="#F29CB7" opacity=".93" transform="rotate(36)  translate(0,-36)"/>
-                  <ellipse rx="30" ry="68" fill="#F29CB7" opacity=".93" transform="rotate(72)  translate(0,-36)"/>
-                  <ellipse rx="30" ry="68" fill="#F29CB7" opacity=".93" transform="rotate(108) translate(0,-36)"/>
-                  <ellipse rx="30" ry="68" fill="#F29CB7" opacity=".93" transform="rotate(144) translate(0,-36)"/>
-                  <ellipse rx="30" ry="68" fill="#F29CB7" opacity=".93" transform="rotate(180) translate(0,-36)"/>
-                  <ellipse rx="30" ry="68" fill="#F29CB7" opacity=".93" transform="rotate(216) translate(0,-36)"/>
-                  <ellipse rx="30" ry="68" fill="#F29CB7" opacity=".93" transform="rotate(252) translate(0,-36)"/>
-                  <ellipse rx="30" ry="68" fill="#F29CB7" opacity=".93" transform="rotate(288) translate(0,-36)"/>
-                  <ellipse rx="30" ry="68" fill="#F29CB7" opacity=".93" transform="rotate(324) translate(0,-36)"/>
-                  <circle r="22" fill="#542D72"/>
-                  <circle r="14" fill="#F29CB7" opacity=".18"/>
-                </g>
-              </svg>
+            <div class="screen-label">J — Quelques jours</div>
+            <h2 class="screen-headline">Marie est morte chez elle. Là où les murs auraient dû la protéger.</h2>
+            <div class="viz-container viz-center" id="viz-j3j">
+              <img src="/src/assets/svg/vase.svg" class="vase-svg" alt="vase" />
             </div>
-            <p class="screen-stat">En Suisse, seules 10 à 22 % des victimes de violence domestique déposent plainte.</p>
+            <p class="screen-stat">Plus de 50 % des féminicides sont commis au domicile de la victime.</p>
           </div>
           <div class="screen-footer">
-            <button class="sources-btn" data-screen="j-2-mois">● Sources</button>
+            <button class="sources-btn" data-screen="j-3-jours">● Sources</button>
             <div class="footer-spacer"></div>
-            <span class="footer-date">16.05.2020</span>
-            <span class="footer-next">17.05.2020</span>
+            <span class="footer-date">03.03.2020</span>
+            <span class="footer-next">18.03.2020</span>
           </div>
         </div>
 
-        <!-- S5: J — 1 an -->
-        <div class="timeline-screen" id="screen-j1a">
+        <!-- S10: JJ — La mort -->
+        <div class="timeline-screen" id="screen-jour-j">
           <div class="screen-content">
-            <div class="screen-label">J — 1 an</div>
-            <h2 class="screen-headline">D'abord un éclat de voix, puis un coup. Rarement, puis constamment.</h2>
-            <div class="viz-container" id="viz-j1a" style="padding-left:40px"></div>
-            <p class="screen-stat">
-              19 918 infractions de violence domestique enregistrées en 2023.<br>
-              Ce n'est que la pointe de l'iceberg.
-            </p>
+            <div class="screen-label">JJ — La mort</div>
+            <h2 class="screen-headline">Le temps passe. Le silence s'installe. Le cycle recommence.</h2>
+            <div class="viz-container" id="viz-jour-j"></div>
+            <p class="screen-stat">En Suisse, 1 femme est victime d'un féminicide tous les 17 jours.</p>
           </div>
           <div class="screen-footer">
-            <button class="sources-btn" data-screen="j-1-an">● Sources</button>
+            <button class="sources-btn" data-screen="jour-j">● Sources</button>
             <div class="footer-spacer"></div>
-            <span class="footer-date">14.06.2020</span>
-            <span class="footer-next">20.06.2020</span>
+            <span class="footer-date">01.01.2020</span>
+            <span class="footer-next">26.01.2020</span>
           </div>
         </div>
 
-        <!-- S6: J — 2 ans -->
-        <div class="timeline-screen" id="screen-j2a">
-          <div class="screen-content">
-            <div class="screen-label">J — 2 ans</div>
-            <h2 class="screen-headline">Qui était-il ? Un voisin, un collègue, un mari sans histoire.</h2>
-            <div class="viz-container" id="viz-j2a" style="padding-left: 80px;">
-              <div id="walker-wrap">
-                <dotlottie-wc
-                  id="walker-lottie"
-                  src="https://lottie.host/f2d22f3b-989e-4379-85e4-4cf4120871f0/Xsh02fjZcq.lottie"
-                  loop
-                  speed="1"
-                ></dotlottie-wc>
-              </div>
-            </div>
-            <p class="screen-stat">
-              L'auteur type a 47 ans, un emploi et un casier judiciaire vierge.<br>
-              Le danger n'a pas de visage monstrueux.
-            </p>
-          </div>
-          <div class="screen-footer">
-            <button class="sources-btn" data-screen="j-2-ans">● Sources</button>
-            <div class="footer-spacer"></div>
-            <span class="footer-date">24.08.2020</span>
-            <span class="footer-next">02.09.2020</span>
-          </div>
-        </div>
-
-        <!-- S7: J — 15 ans -->
-        <div class="timeline-screen" id="screen-j15a">
-          <div class="screen-content">
-            <div class="screen-label">J — 15 ans</div>
-            <h2 class="screen-headline">Le danger porte un nom familier.</h2>
-            <div class="viz-container" id="viz-j15a"></div>
-            <p class="screen-stat">
-              Entre 2020 et 2025, 163 personnes ont été tuées par un proche.<br>
-              Parmi elles, 125 femmes pour 38 hommes.
-            </p>
-          </div>
-          <div class="screen-footer">
-            <button class="sources-btn" data-screen="j-15-ans">● Sources</button>
-            <div class="footer-spacer"></div>
-            <span class="footer-date">21.09.2020</span>
-            <span class="footer-next">04.11.2020</span>
-          </div>
-        </div>
-
-        <!-- S8: J — 30 ans -->
-        <div class="timeline-screen" id="screen-j30a">
-          <div class="screen-content">
-            <div class="screen-label">J — 30 ans</div>
-            <h2 class="screen-headline">D'abord un éclat de voix, puis un coup. Rarement, puis constamment.</h2>
-            <div class="viz-container" id="viz-j30a"></div>
-            <p class="screen-stat">
-              19 918 infractions de violence domestique enregistrées en 2023.<br>
-              Ce n'est que la pointe de l'iceberg.
-            </p>
-          </div>
-          <div class="screen-footer">
-            <button class="sources-btn" data-screen="j-30-ans">● Sources</button>
-            <div class="footer-spacer"></div>
-            <span class="footer-date">25.12.2020</span>
-            <span class="footer-next">30.12.2020</span>
-          </div>
-        </div>
-
-        <!-- S9: J — Adolescence -->
-        <div class="timeline-screen" id="screen-j46a">
-          <div class="screen-content">
-            <div class="screen-label">J — Adolescence</div>
-            <h2 class="screen-headline">Marie a grandi en Suisse. Un pays stable, un pays sûr. Du moins, en apparence.</h2>
-            <div class="viz-container" id="viz-j46a"></div>
-            <p class="screen-stat">
-              En 2025, 357 enfants ont été victimes d'actes sexuels dans un cadre familial :
-              279 filles et 78 garçons. Les filles sont 3,6 fois plus exposées.
-            </p>
-          </div>
-          <div class="screen-footer">
-            <button class="sources-btn" data-screen="j-46-ans">● Sources</button>
-            <div class="footer-spacer"></div>
-            <span class="footer-date">12.01.2021</span>
-            <span class="footer-next">17.01.2021</span>
-          </div>
-        </div>
-
-        <!-- S10: J — Naissance -->
-        <div class="timeline-screen" id="screen-naissance">
-          <div class="screen-content">
-            <div class="screen-label">J — Naissance</div>
-            <h2 class="screen-headline">Marie naît. En Suisse.</h2>
-            <div class="viz-container viz-center" id="viz-naissance"></div>
-            <p class="screen-stat">
-              Le mot « féminicide » est toujours absent du Code pénal suisse.<br>
-              À ce jour, seuls 25 pays dans le monde reconnaissent légalement ce crime pour ce qu'il est.
-            </p>
-          </div>
-          <div class="screen-footer">
-            <div></div>
-            <button class="sources-btn" data-screen="j-46-ans">● Sources</button>
-            <div class="footer-spacer"></div>
-            <span class="footer-date">08.02.2021</span>
-            <span class="footer-next">16.02.2021</span>
-          </div>
-        </div>
-
-        <!-- S11: Sources & Crédits -->
-        <div class="timeline-screen" id="screen-sources">
-          <div class="screen-content sources-content">
-            <h2 class="screen-headline">Sources &amp; Crédits</h2>
-            <div class="sources-grid">
-              <div class="source-item">
-                <span class="source-label">Féminicides recensés</span>
-                <a href="https://www.stopfemizid.ch/francais" target="_blank" rel="noopener">stopfemizid.ch</a>
-              </div>
-              <div class="source-item">
-                <span class="source-label">Violence domestique</span>
-                <a href="https://www.ebg.admin.ch/dam/fr/sd-web/YXpdk4fA4TpV/a4_chiffres-de-la-violence-domestique-en-suisse.pdf" target="_blank" rel="noopener">Bureau fédéral de l'égalité (EBG)</a>
-              </div>
-              <div class="source-item">
-                <span class="source-label">Statistiques homicides</span>
-                <a href="https://www.bfs.admin.ch/bfs/fr/home/actualites/quoi-de-neuf.assetdetail.36456053.html" target="_blank" rel="noopener">Office fédéral de la statistique (OFS)</a>
-              </div>
-              <div class="source-item">
-                <span class="source-label">Profil des auteurs</span>
-                <a href="https://www.24heures.ch/suisse-le-profil-des-auteurs-de-feminicides-190676825350" target="_blank" rel="noopener">24 Heures</a>
-              </div>
-              <div class="source-item">
-                <span class="source-label">Féminicide après rupture</span>
-                <a href="https://www.24heures.ch/feminicide-la-rupture-moment-fatal-pour-les-femmes-247104825849" target="_blank" rel="noopener">24 Heures — La rupture, moment fatal</a>
-              </div>
-              <div class="source-item">
-                <span class="source-label">Campagne nationale</span>
-                <a href="https://www.edi.admin.ch/fr/violence-domestique-sexuelle-et-de-genre-la-premiere-campagne-nationale-de-prevention-est-lancee" target="_blank" rel="noopener">Département fédéral de l'intérieur</a>
-              </div>
-            </div>
-            <div class="credits">
-              <p>Un projet de sensibilisation au féminicide en Suisse.<br>Marie est un personnage fictif. Ses statistiques sont réelles.</p>
-              <a href="index.html" class="back-home-btn">← Retour à l'accueil</a>
-            </div>
+        <!-- S11: MORTE -->
+        <div class="timeline-screen" id="screen-morte">
+          <div class="morte-center">
+            <span class="morte-cross">†</span>
+            <span class="morte-name">Marie</span>
+            <span class="morte-date">23.01.2026</span>
           </div>
         </div>
 
