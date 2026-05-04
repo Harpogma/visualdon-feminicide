@@ -5,7 +5,7 @@
 
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { startJourJAnim, playFlowerAnim, playHomicideGrid, playAdolescenceMap, manageLottieWalker } from './visualizations.js'
+import { startJourJAnim, playFlowerAnim, playHomicideGrid, playAdolescenceMap, manageLottieWalker, cleanupFlowerPoem } from './visualizations.js'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -44,6 +44,8 @@ export function initTimeline() {
 
   /* Index de l'écran JJ - La mort */
   const jourJIdx = Array.from(screens).findIndex(s => s.querySelector('#viz-jour-j'))
+  /* Index de l'écran J — 3 semaines — fleur + pétales */
+  const j3sIdx   = Array.from(screens).findIndex(s => s.id === 'screen-j3s')
   /* Index de l'écran J-1 an - Floraison */
   const j1aIdx   = Array.from(screens).findIndex(s => s.id === 'screen-j1a')
   /* Index de l'écran J-2 ans - Homme marchant (Lottie) */
@@ -93,6 +95,11 @@ export function initTimeline() {
         if (idx === j15aIdx)  playHomicideGrid()
         /* Lance la carte de pousses quand l'écran J+46 ans entre en vue */
         if (idx === j46aIdx)  playAdolescenceMap()
+
+        /* Efface les pétales tombés quand on quitte screen-j3s */
+        if (j3sIdx >= 0 && idx !== _prevIdx && _prevIdx === j3sIdx) {
+          cleanupFlowerPoem()
+        }
 
         /* Play/pause Lottie sur entrée et sortie de screen-j2a */
         if (j2aIdx >= 0 && idx !== _prevIdx) {
