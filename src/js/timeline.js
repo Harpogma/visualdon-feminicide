@@ -5,7 +5,7 @@
 
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { startJourJAnim, playFlowerAnim, playHomicideGrid, playAdolescenceMap, manageLottieWalker } from './visualizations.js'
+import { startJourJAnim, playFlowerAnim, playHomicideGrid, playAdolescenceMap, manageLottieWalker, playViolentometre } from './visualizations.js'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -44,6 +44,8 @@ export function initTimeline() {
 
   /* Index de l'écran JJ - La mort */
   const jourJIdx = Array.from(screens).findIndex(s => s.querySelector('#viz-jour-j'))
+  /* Index de l'écran J-2 mois - Violentomètre */
+  const j2mIdx   = Array.from(screens).findIndex(s => s.id === 'screen-j2m')
   /* Index de l'écran J-1 an - Floraison */
   const j1aIdx   = Array.from(screens).findIndex(s => s.id === 'screen-j1a')
   /* Index de l'écran J-2 ans - Homme marchant (Lottie) */
@@ -87,6 +89,8 @@ export function initTimeline() {
 
         /* Démarre l'animation des mois quand l'écran JJ entre en vue */
         if (idx === jourJIdx) startJourJAnim()
+        /* Lance le violentomètre quand l'écran J-2 mois entre en vue */
+        if (idx === j2mIdx)   playViolentometre()
         /* Lance la floraison quand l'écran J-1 an entre en vue */
         if (idx === j1aIdx)   playFlowerAnim()
         /* Lance la grille animée quand l'écran J-15 ans entre en vue */
