@@ -614,35 +614,51 @@ function mergeFlowersTransition(flowerEls) {
     return p
   })
 
-  gsap.timeline()
+  gsap
+    .timeline()
     // Phase 1 — converge images toward merge point
     .to(svgImgs, {
       attr: { x: cx - 25, y: cy - 25, width: 50, height: 50 },
       duration: 1.4,
-      ease: 'power2.in',
-      stagger: { amount: 0.4, from: 'random' },
+      ease: "power2.in",
+      stagger: { amount: 0.4, from: "random" },
     })
     // Phase 2 — fade images out
-    .to(svgImgs, {
-      opacity: 0,
-      duration: 0.5,
-      stagger: 0.04,
-      ease: 'power1.in',
-    }, '-=0.5')
+    .to(
+      svgImgs,
+      {
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.04,
+        ease: "power1.in",
+      },
+      "-=0.5",
+    )
     // Phase 3 — MorphSVG: circle → first petal
     .to(morphPath, { opacity: 1, duration: 0.15 })
-    .to(morphPath, { morphSVG: FLOWER_PATHS[0], duration: 0.9, ease: 'power2.out' }, '-=0.05')
+    .to(
+      morphPath,
+      { morphSVG: FLOWER_PATHS[0], duration: 0.9, ease: "power2.out" },
+      "-=0.05",
+    )
     // Phase 4 — remaining petals bloom in
-    .to(restPetals, { opacity: 1, duration: 0.4, stagger: 0.06, ease: 'power1.out' }, '-=0.4')
+    .to(
+      restPetals,
+      { opacity: 1, duration: 0.4, stagger: 0.06, ease: "power1.out" },
+      "-=0.4",
+    )
     // Phase 5 — flower travels to the right boundary of screen 1 and vanishes there
     .to(flowerSvg, {
-      left: window.innerWidth,
+      left: -FLOWER_W,
       opacity: 0,
       duration: 1.4,
-      ease: 'power2.in',
+      ease: "power2.in",
     })
     // Cleanup both elements
-    .call(() => { overlay.remove(); flowerSvg.remove() })
+    .call(() => {
+      overlay.remove();
+      flowerSvg.remove();
+    });
 }
 
 /* ══════════════════════════════════════════
@@ -941,7 +957,7 @@ export function initFlowerPoem() {
     const finalTop  = (H - FLOWER_H) / 2
 
     // Start off-screen left, vertically centred
-    gsap.set(wrapper, { left: -FLOWER_W, top: finalTop, y: 0, opacity: 0 })
+    gsap.set(wrapper, { left: W + FLOWER_W, top: finalTop, y: 0, opacity: 0 });
 
     // Poem container: top-right area of the flower's resting position
     gsap.set(poemDiv, { left: W / 2 + FLOWER_W / 2 + 18, top: H / 2 - 90 })
