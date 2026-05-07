@@ -1054,6 +1054,190 @@ export function manageLottieWalker(isActive) {
   }
 }
 
+/* ══════════════════════════════════════════
+   J — 2 mois : Violentomètre
+   SVG inline par fleur — 9 pétales animables individuellement
+   Hover : révélation circulaire sens horaire, vitesse adaptative
+   Fleurs 6-10 : dépérissement (rotation + scale) + tremblement
+══════════════════════════════════════════ */
+
+// Paths des 9 pétales de flower.svg dans leur ordre de déclaration (idx 0-8)
+const VIO_PETAL_D = [
+  'M155.2,266.59c-31.95-14.59-46.04-52.37-31.46-84.31l8.4-18.39c31.95,14.59,46.04,52.36,31.46,84.31l-8.4,18.39Z',
+  'M63.62,252.8c-15.1-31.71-1.61-69.71,30.1-84.81l18.26-8.69c15.1,31.71,1.61,69.71-30.1,84.81l-18.26,8.69Z',
+  'M2.33,183.37c8.82-34,43.57-54.44,77.57-45.62l19.57,5.08c-8.82,34-43.57,54.44-77.57,45.62l-19.57-5.08Z',
+  'M0,90.78c28.61-20.38,68.37-13.69,88.75,14.91l11.73,16.47c-28.61,20.38-68.37,13.69-88.75-14.91L0,90.78Z',
+  'M57.74,18.37c35.01,2.78,61.18,33.46,58.4,68.47l-1.6,20.16c-35.01-2.78-61.18-33.46-58.4-68.47l1.6-20.16Z',
+  'M148.51,0c25.03,24.63,25.36,64.95.72,89.99l-14.18,14.41c-25.03-24.63-25.36-64.95-.72-89.99l14.18-14.41Z',
+  'M229.85,44.28c3.34,34.96-22.33,66.06-57.29,69.4l-20.13,1.92c-3.34-34.96,22.33-66.06,57.29-69.4l20.13-1.92Z',
+  'M263.7,130.49c-19.91,28.93-59.56,36.25-88.49,16.34l-16.66-11.46c19.91-28.93,59.56-36.25,88.5-16.34l16.65,11.46Z',
+  'M234.22,218.28c-33.85,9.36-68.93-10.52-78.29-44.37l-5.39-19.49c33.85-9.36,68.93,10.52,78.29,44.37l5.39,19.49Z',
+]
+
+// Ordre de révélation dans le sens horaire depuis 12h (pathIdx dans le SVG source)
+const VIO_CW_ORDER = [5, 6, 7, 8, 0, 1, 2, 3, 4]
+
+const VIO_LABELS = [
+  'A confiance en toi',
+  'Respecte tes décisions',
+  'Te manipule',
+  'Se moque de toi',
+  'Contrôle tes sorties et tes habits',
+  'Fouille tes messages et tes applications',
+  'Menace de se suicider à cause de toi',
+  "T'isole de ta famille et de tes amis",
+  'Te pousse ou te frappe',
+  "T'oblige à avoir des relations sexuelles",
+]
+
+// Couleur de remplissage par fleur — calculée d'après les brightness de l'itération précédente
+const VIO_COLORS = [
+  '#F29CB7',  // 1 — rose vif  (×1.00)
+  '#F29CB7',  // 2 — rose vif  (×1.00)
+  '#C68096',  // 3 — brightness(0.82)
+  '#AE7084',  // 4 — brightness(0.72)
+  '#966171',  // 5 — brightness(0.62)
+  '#794E5B',  // 6 — brightness(0.50)
+  '#66424D',  // 7 — brightness(0.42)
+  '#52353E',  // 8 — brightness(0.34)
+  '#3F2930',  // 9 — brightness(0.26)
+  '#2C1C21',  // 10 — brightness(0.18)
+]
+
+// Durée totale de révélation au hover : du plus rapide (sain) au plus lent (danger)
+const VIO_REVEAL = [0.30, 0.40, 0.55, 0.70, 0.85, 1.00, 1.15, 1.30, 1.42, 1.55]
+
+let _violentometreTl     = null
+let _violentometrePlayed = false
+
+// Tremblement subtil sur les fleurs danger après complétion du hover
+function _shakeVio(svgEl, i) {
+  const px = (i - 4) * 1.0   // 1px (i=5) → 5px (i=9), progressif
+  gsap.timeline()
+    .to(svgEl, { x:  px,        duration: 0.055, ease: 'none' })
+    .to(svgEl, { x: -px,        duration: 0.055, ease: 'none' })
+    .to(svgEl, { x:  px * 0.6,  duration: 0.055, ease: 'none' })
+    .to(svgEl, { x: -px * 0.6,  duration: 0.055, ease: 'none' })
+    .to(svgEl, { x:  px * 0.25, duration: 0.04,  ease: 'none' })
+    .to(svgEl, { x:  0,         duration: 0.04,  ease: 'power1.out' })
+}
+
+export function initViolentometre() {
+  const grid = document.getElementById('viz-j2m')
+  if (!grid) return
+  grid.innerHTML = ''
+
+  const ns = 'http://www.w3.org/2000/svg'
+
+  const units = VIO_LABELS.map((label, i) => {
+    const color    = VIO_COLORS[i]
+    const isDanger = i >= 5
+
+    // ── Conteneur ───────────────────────────────────────────
+    const unit = document.createElement('div')
+    unit.className = 'vio-unit'
+
+    // ── SVG inline : 9 pétales, fill vide au repos ──────────
+    const svg = document.createElementNS(ns, 'svg')
+    svg.setAttribute('viewBox', '0 0 263.7 266.59')
+    svg.setAttribute('aria-hidden', 'true')
+    svg.classList.add('vio-flower-svg')
+
+    const pathEls = VIO_PETAL_D.map(d => {
+      const p = document.createElementNS(ns, 'path')
+      p.setAttribute('d', d)
+      p.setAttribute('fill', color)
+      p.setAttribute('stroke', color)
+      p.setAttribute('stroke-width', '4')
+      p.setAttribute('fill-opacity', '0')       // contour seul au repos
+      p.setAttribute('stroke-opacity', '0.40')
+      svg.appendChild(p)
+      return p
+    })
+
+    // Ordre horaire pour l'animation (12h → 2h → 3h → … → 11h)
+    const pathsCw = VIO_CW_ORDER.map(idx => pathEls[idx])
+
+    // ── Label ────────────────────────────────────────────────
+    const span = document.createElement('span')
+    span.className = 'vio-label' + (i >= 7 ? ' vio-label--danger' : '')
+    span.textContent = label
+
+    unit.appendChild(svg)
+    unit.appendChild(span)
+    grid.appendChild(unit)
+
+    // ── Hover : révélation circulaire adaptative ─────────────
+    const totalReveal = VIO_REVEAL[i]
+    const petalDur    = totalReveal * 0.38   // durée d'animation de chaque pétale
+    const staggerAmt  = totalReveal * 0.62   // durée totale du stagger sur 9 pétales
+    let hoverTl = null
+
+    unit.addEventListener('mouseenter', () => {
+      if (hoverTl) hoverTl.kill()
+      gsap.to(svg, { opacity: 1, duration: 0.12, overwrite: 'auto' })
+      span.style.color = '#ffffff'
+
+      hoverTl = gsap.timeline({
+        onComplete: () => { if (isDanger) _shakeVio(svg, i) },
+      })
+      .to(pathsCw, {
+        attr: { 'fill-opacity': 1 },
+        duration: petalDur,
+        stagger: { amount: staggerAmt, ease: 'power1.in' },
+        ease: 'power1.out',
+      })
+    })
+
+    unit.addEventListener('mouseleave', () => {
+      if (hoverTl) { hoverTl.kill(); hoverTl = null }
+      // Ramène tous les pétales à l'état contour, quelle que soit leur position courante
+      gsap.to(pathEls, {
+        attr: { 'fill-opacity': 0 },
+        duration: 0.22,
+        ease: 'power1.in',
+        overwrite: 'auto',
+      })
+      gsap.to(svg, { opacity: 0.72, duration: 0.2, overwrite: 'auto' })
+      span.style.color = ''
+    })
+
+    return unit
+  })
+
+  // ── Dépérissement progressif pour les fleurs 6-10 ────────────
+  units.slice(5).forEach((unit, j) => {
+    const svg = unit.querySelector('.vio-flower-svg')
+    gsap.set(svg, {
+      rotation: 12 + j * 1.5,       // 12° → 18° croissant
+      scale: 0.88 - j * 0.012,      // 0.88 → 0.83 décroissant
+      transformOrigin: 'center bottom',
+    })
+  })
+
+  // ── État initial (contours visibles, unités invisibles avant stagger) ──
+  units.forEach(unit => {
+    gsap.set(unit.querySelector('.vio-flower-svg'), { opacity: 0.72 })
+  })
+  gsap.set(units, { opacity: 0, x: -10 })
+
+  // ── Timeline d'entrée ─────────────────────────────────────────
+  _violentometreTl = gsap.timeline({ paused: true })
+    .to(units, {
+      opacity: 1,
+      x: 0,
+      duration: 0.5,
+      stagger: 0.15,
+      ease: 'power2.out',
+    })
+}
+
+export function playViolentometre() {
+  if (_violentometrePlayed || !_violentometreTl) return
+  _violentometrePlayed = true
+  _violentometreTl.play()
+}
+
 /** Lance toutes les visualisations */
 export function initAllViz() {
   vizJourJ()
@@ -1063,5 +1247,6 @@ export function initAllViz() {
   initGlobe()
   initFlowerToStem()
   initFlowerPoem()
+  initViolentometre()
   _initWalkerLottie()
 }
