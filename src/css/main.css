@@ -798,4 +798,78 @@ body {
   .nav              { padding: 20px 28px; }
   .man-svg          { width: 280px; }
   .big-flower-svg   { width: 180px; }
+  .violentometre-grid {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 8px 6px;
+    padding: 6px 12px;
+  }
+  .vio-unit {
+    flex: 0 0 18%;
+    max-width: none;
+  }
+  .vio-flower-svg {
+    width: 100%;
+  }
+  .vio-label {
+    font-size: 8px;
+    max-width: 100%;
+  }
+}
+
+#screen-j2m .screen-content {
+  padding-top: 68px;
+  padding-bottom: 6px;
+}
+
+/* Centrage vertical de la ligne de fleurs entre le titre et la statistique */
+.violentometre-grid {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;          /* centrage vertical dans l'espace disponible */
+  justify-content: center;
+  gap: clamp(6px, 1.1vw, 18px);
+  padding: 0 clamp(16px, 2vw, 40px); /* air horizontal */
+  overflow: visible;            /* les strokes SVG ne doivent pas être clippés */
+  /* Neutralise l'animation CSS d'entrée du conteneur — les unités sont gérées par GSAP */
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.vio-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(6px, 0.8vh, 12px);
+  cursor: default;
+  flex: 1;
+  min-width: 0;
+  max-width: clamp(64px, 8.5vw, 108px);
+}
+
+/* SVG inline — remplace l'<img> de l'itération précédente */
+.vio-flower-svg {
+  width: clamp(46px, 6vw, 82px);
+  height: auto;
+  display: block;
+  overflow: visible;  /* les strokes de bord ne doivent pas être clippés */
+  pointer-events: none;
+}
+
+.vio-label {
+  font-size: clamp(9px, 0.82vw, 11px);
+  font-weight: 300;
+  color: var(--rose);
+  text-align: center;
+  line-height: 1.4;
+  max-width: clamp(64px, 8vw, 100px);
+  opacity: 0.82;
+  transition: color 0.18s ease;
+}
+
+.vio-label--danger {
+  font-weight: 700;
+  opacity: 0.92;
 }
