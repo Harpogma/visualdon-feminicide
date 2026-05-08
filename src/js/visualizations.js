@@ -1042,23 +1042,15 @@ async function _initWalkerLottie() {
   const wc = document.getElementById('walker-lottie')
   if (!wc) return
 
-  const setupPlayer = (player) => {
+  // Poll until wc.dotLottie is assigned (LitElement lifecycle is async)
+  const iv = setInterval(() => {
+    const player = wc.dotLottie
+    if (!player) return
+    clearInterval(iv)
     _walkerLottie = player
-    if (_walkerActive) player.play()
-  }
-
-  const player = wc.dotLottie
-  if (player?.isLoaded) {
-    setupPlayer(player)
-  } else if (player) {
-    player.addEventListener('load', () => setupPlayer(player), { once: true })
-  } else {
-    // dotLottie pas encore assigné (initialisation asynchrone du LitElement)
-    wc.addEventListener('load', () => {
-      const p = wc.dotLottie
-      if (p) setupPlayer(p)
-    }, { once: true })
-  }
+    // autoplay handles the initial play; just sync pause state if needed
+    if (!_walkerActive) player.pause()
+  }, 50)
 }
 
 export function manageLottieWalker(isActive) {
