@@ -41,3 +41,7 @@ En donnant une forme visuelle à ces données, nous cherchons à provoquer une p
 ## Inspiration
 
 <https://ydcpodcast.org/>
+
+## Présentation Figma
+
+<https://www.figma.com/slides/fI3GB5nkzlPOdAUHNBvlB7>
