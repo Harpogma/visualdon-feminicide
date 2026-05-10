@@ -2,14 +2,14 @@ import { defineConfig } from 'vite'
 import { resolve } from 'path'
 
 export default defineConfig({
-  base: './',
+  base: "/visualdon-feminicide/",
   build: {
-    outDir: 'dist',
-    assetsDir: 'assets',
+    outDir: "dist",
+    assetsDir: "assets",
     rollupOptions: {
       input: {
-        main:     resolve(__dirname, 'index.html'),
-        timeline: resolve(__dirname, 'timeline.html'),
+        main: resolve(__dirname, "index.html"),
+        timeline: resolve(__dirname, "timeline.html"),
       },
     },
   },
@@ -17,4 +17,4 @@ export default defineConfig({
     port: 5173,
     open: true,
   },
-})
+});
