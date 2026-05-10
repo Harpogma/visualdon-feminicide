@@ -528,6 +528,7 @@ body {
   display: block;
   width: 300px;
   height: 300px;
+  filter: brightness(0) saturate(100%) invert(78%) sepia(28%) saturate(600%) hue-rotate(299deg) brightness(80%);
 }
 
 /* ══════════════════════════════════════════
