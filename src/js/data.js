@@ -13,6 +13,9 @@ export const INFRACTION_DATA = [
 ]
 
 export const SOURCES_MAP = {
+  'naissance': [
+    { label: 'Violence against women — UN Women', url: 'https://data.unwomen.org/global-database-on-violence-against-women' },
+  ],
   'jour-j': [
     { label: 'Féminicides recensés — Stop Femizid', url: 'https://www.stopfemizid.ch/francais' },
   ],
