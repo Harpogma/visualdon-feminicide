@@ -857,7 +857,7 @@ export async function initGlobe() {
    J — Quelques jours: fleur apparaît à gauche puis rejoint le bout de la anse
 ══════════════════════════════════════════ */
 export function initFlowerToStem() {
-  const screen3  = document.getElementById('screen-j3j')
+  const screen3  = document.getElementById('screen-quelques-jours')
   const flowerEl = screen3?.querySelector('.flower-left')
   if (!screen3 || !flowerEl) return
 
@@ -905,7 +905,7 @@ export function initFlowerToStem() {
    puis cascade rapide sur "plus du tout"
 ══════════════════════════════════════════ */
 export function initFlowerPoem() {
-  const screen    = document.getElementById('screen-j3s')
+  const screen    = document.getElementById('screen-3-semaines')
   if (!screen) return
   const wrapper   = screen.querySelector('.flower-s3-wrap')
   const poemDiv   = screen.querySelector('.poem-lines-s3')
@@ -969,7 +969,7 @@ export function initFlowerPoem() {
   observer.observe(screen, { attributes: true, attributeFilter: ['class'] })
 }
 
-// Fallen petal clone SVGs tracked for cleanup when leaving screen-j3s
+// Fallen petal clone SVGs tracked for cleanup when leaving screen-3-semaines
 let _flowerPoemClones = []
 
 export function cleanupFlowerPoem() {
